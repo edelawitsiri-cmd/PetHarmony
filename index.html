@@ -346,6 +346,12 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
 .lang-fab{touch-action:none}
 .lang-fab.dragging{opacity:.9;transform:scale(1.08);box-shadow:0 8px 22px rgba(0,0,0,.28)}
 
+/* ===== visual polish: soft card shadows + hero highlight + svg food thumbs ===== */
+.sec,.post-c,.hw-card,.course-card,.cart-item,.prod-card,.plan-tier{box-shadow:0 1px 6px rgba(17,24,39,.05)}
+.hero::before{content:'';position:absolute;top:-46px;right:-46px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.10);pointer-events:none}
+.food-emoji{overflow:hidden}
+.food-emoji svg{width:100%;height:100%;display:block}
+.scan-food svg{width:112px;height:112px;border-radius:18px;display:block}
 </style>
 </head>
 <body>
@@ -419,7 +425,7 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
 
   <!-- AI mood card -->
   <div class="ai-card">
-    <div class="ai-emoji">😌</div>
+    <div class="ai-emoji"><i class="ti ti-mood-smile" style="font-size:26px;color:var(--teal)"></i></div>
     <div style="flex:1">
       <div style="font-size:13px;font-weight:700;color:var(--teal-dk);display:flex;align-items:center;gap:5px"><i class="ti ti-sparkles"></i><span data-t="ai_title">AI 情绪识别</span></div>
       <div style="font-size:12px;color:var(--ink);margin-top:3px" data-t="ai_body">项圈检测到巴迪现在很放松，是训练的好时机～</div>
@@ -458,7 +464,7 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
 <div class="scroll">
   <div class="notif-item unread" onclick="goTo('s-msgs')" style="padding-left:22px">
     <div class="uav" style="background:#7F77DD;width:40px;height:40px">王</div>
-    <div style="flex:1"><div class="tm">小王</div><div class="ts" style="margin-top:2px" data-t="n1">你好！巴迪今天怎么样？🐕</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_5min">5 分钟前</div></div>
+    <div style="flex:1"><div class="tm">小王</div><div class="ts" style="margin-top:2px" data-t="n1">你好！巴迪今天怎么样？</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_5min">5 分钟前</div></div>
     <span class="pill pt" data-t="msg">私信</span>
   </div>
   <div class="notif-item unread" style="padding-left:22px">
@@ -514,7 +520,7 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
 <div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t">小王</span></div>
 <div class="scroll" id="chat-scroll" style="background:var(--bg)">
   <div class="msg-wrap">
-    <div class="msg-row"><div class="msg-av" style="background:#7F77DD">王</div><div class="msg-bubble" data-t="c1">你好 Marco！巴迪今天怎么样？🐕</div></div>
+    <div class="msg-row"><div class="msg-av" style="background:#7F77DD">王</div><div class="msg-bubble" data-t="c1">你好 Marco！巴迪今天怎么样？</div></div>
     <div class="msg-row me"><div class="msg-av" style="background:var(--teal)">我</div><div class="msg-bubble mine" data-t="c2">很好！今早把训练全部完成了</div></div>
     <div class="msg-row"><div class="msg-av" style="background:#7F77DD">王</div><div class="msg-bubble" data-t="c3">太好了！Mochi 昨晚没睡好，项圈只记录到4小时睡眠</div></div>
     <div class="msg-row me"><div class="msg-av" style="background:var(--teal)">我</div><div class="msg-bubble mine" data-t="c4">试试减少下午的活动量？医生之前是这么建议的</div></div>
@@ -769,7 +775,7 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
 <div class="feed on" id="feed-amici">
   <div class="post-c" style="margin-top:0">
     <div class="post-h"><div class="uav" style="background:var(--teal)">我</div><div style="flex:1"><div class="pn">Marco Liu</div><div class="pt2">2分钟 · 上海</div></div><i class="ti ti-dots" style="color:var(--ink3);font-size:16px"></i></div>
-    <div class="p-txt" data-t="post1">巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？💪</div>
+    <div class="p-txt" data-t="post1">巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？</div>
     <div class="p-img media" style="height:150px" id="post-img-1"></div>
     <div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pt" data-t="t_golden">金毛</span><span class="pill pp" data-t="t_training">训练</span></div>
     <div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>24</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>8</span></button><button class="pact"><i class="ti ti-share-3"></i><span data-t="share">分享</span></button></div>
@@ -783,7 +789,7 @@ button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.
   </div>
   <div class="post-c">
     <div class="post-h"><div class="uav" style="background:var(--amber)">章</div><div style="flex:1"><div class="pn">章玉</div><div class="pt2">3小时 · 深圳</div></div><i class="ti ti-dots" style="color:var(--ink3);font-size:16px"></i></div>
-    <div class="p-txt" data-t="post3">用500训练积分兑换了皇家狗粮券，积分系统太有动力了！🎁</div>
+    <div class="p-txt" data-t="post3">用500训练积分兑换了皇家狗粮券，积分系统太有动力了！</div>
     <div class="p-img media" style="height:150px" id="post-img-3"></div>
     <div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pc" data-t="t_shop">商城</span><span class="pill pg" data-t="t_save">省钱</span></div>
     <div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>18</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>5</span></button><button class="pact"><i class="ti ti-share-3"></i><span data-t="share3">分享</span></button></div>
@@ -899,6 +905,11 @@ const SVG={
  collarP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E4F5F2"/><stop offset="1" stop-color="#FDF3DC"/></linearGradient></defs><rect width="200" height="200" fill="url(#cg)"/><ellipse cx="100" cy="105" rx="62" ry="58" fill="none" stroke="#2BAA9B" stroke-width="14"/><rect x="78" y="150" width="44" height="30" rx="8" fill="#E8743B"/><circle cx="100" cy="165" r="7" fill="#fff"/><rect x="86" y="44" width="28" height="20" rx="5" fill="#1B8478"/></svg>`,
  bowlP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6F1FB"/><stop offset="1" stop-color="#E4F5F2"/></linearGradient></defs><rect width="200" height="200" fill="url(#bg2)"/><path d="M50 95h100l-10 50a14 14 0 0 1-14 12H74a14 14 0 0 1-14-12z" fill="#378ADD"/><ellipse cx="100" cy="95" rx="50" ry="16" fill="#5BA0E8"/><ellipse cx="100" cy="92" rx="38" ry="11" fill="#cfe4fb"/><circle cx="150" cy="70" r="9" fill="#2BAA9B"/></svg>`,
  oilP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDF3DC"/><stop offset="1" stop-color="#EAF3DE"/></linearGradient></defs><rect width="200" height="200" fill="url(#og)"/><g><rect x="70" y="70" width="26" height="70" rx="8" fill="#27500A" opacity=".8"/><rect x="104" y="60" width="26" height="80" rx="8" fill="#2BAA9B" opacity=".85"/><rect x="76" y="58" width="14" height="14" rx="3" fill="#8A5E08"/><rect x="110" y="48" width="14" height="14" rx="3" fill="#8A5E08"/></g><path d="M150 110c6 0 10 5 10 11s-4 9-10 9-10-3-10-9 4-11 10-11z" fill="#F2B134"/></svg>`,
+ foodKibble:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#FDF3DC"/><ellipse cx="50" cy="64" rx="34" ry="16" fill="#C68642"/><ellipse cx="50" cy="58" rx="34" ry="15" fill="#A86B32"/><circle cx="38" cy="54" r="6" fill="#8A5527"/><circle cx="54" cy="50" r="6" fill="#8A5527"/><circle cx="62" cy="58" r="6" fill="#8A5527"/><circle cx="44" cy="62" r="6" fill="#8A5527"/></svg>`,
+ foodChicken:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#FCEAE0"/><path d="M36 64c-10-10-10-26 2-36 12-9 28-7 36 4 7 10 5 24-4 32-9 9-24 10-34 0z" fill="#E0A064"/><path d="M34 66l-10 10c-3 3-1 8 3 8l5-5 5 5c4 0 6-5 3-8z" fill="#F6E7D4"/><ellipse cx="58" cy="46" rx="14" ry="10" fill="#EDB97E"/></svg>`,
+ foodCarrot:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#EAF3DE"/><path d="M62 38L34 76c-3 4 1 8 5 5l38-28c5-4 2-12-4-12z" fill="#E8743B"/><path d="M66 36c2-8 8-12 14-12-2 6-6 12-12 14zM64 34c-2-8 0-14 6-18 2 6 0 14-4 18z" fill="#27500A"/><path d="M50 52l8 6M42 62l8 6" stroke="#C85A28" stroke-width="3" stroke-linecap="round"/></svg>`,
+ foodChoc:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#F2E8E2"/><rect x="26" y="26" width="48" height="48" rx="6" fill="#5B3A24"/><path d="M50 26v48M26 50h48" stroke="#3F2718" stroke-width="4"/><rect x="26" y="26" width="22" height="22" rx="6" fill="#6E4A2F"/></svg>`,
+ foodBone:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#F4F0E8"/><g fill="#E3D5BC"><circle cx="30" cy="36" r="10"/><circle cx="38" cy="28" r="10"/><circle cx="70" cy="64" r="10"/><circle cx="62" cy="72" r="10"/><rect x="30" y="30" width="44" height="14" rx="7" transform="rotate(45 52 50)"/></g></svg>`,
  course1:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BAA9B"/><stop offset="1" stop-color="#1B8478"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc1)"/><circle cx="80" cy="80" r="30" fill="#fff" opacity=".18"/><path d="M200 100c-14 0-25 11-25 25h50c0-14-11-25-25-25z" fill="#fff" opacity=".9"/><circle cx="200" cy="62" r="16" fill="#fff" opacity=".9"/><circle cx="245" cy="55" r="22" fill="#F2B134" opacity=".5"/></svg>`,
  course2:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc2)"/><path d="M60 110c0-22 18-40 40-40s40 18 40 40z" fill="#fff" opacity=".85"/><circle cx="100" cy="55" r="18" fill="#fff" opacity=".85"/><circle cx="230" cy="75" r="34" fill="#fff" opacity=".15"/></svg>`,
  course3:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7F77DD"/><stop offset="1" stop-color="#3C3489"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc3)"/><circle cx="150" cy="60" r="24" fill="#fff" opacity=".85"/><path d="M110 120c0-22 18-40 40-40s40 18 40 40z" fill="#fff" opacity=".85"/><circle cx="60" cy="40" r="14" fill="#F2B134" opacity=".6"/></svg>`,
@@ -927,10 +938,10 @@ const strings={
   ai_title:'AI 情绪识别',ai_body:'项圈检测到巴迪现在很放松，是训练的好时机～',
   wellness:'健康评分',detail:'详情',excellent:'优秀',m_walk:'今日运动',m_water:'饮水量',m_hr:'平均心率',m_sleep:'睡眠',
   today_task:'今日任务',task_progress:'2/3 · 还差50积分',task1:'完成"坐下&等待"训练',task2:'记录今日饮水',task3:'分享一条爱宠动态',go:'去完成',
-  n1:'你好！巴迪今天怎么样？🐕',msg:'私信',n2_t:'章玉 赞了你的动态',n2_s:'"巴迪和训练打卡"',n3_t:'李梅 关注了你',n3_s:'德国牧羊犬 · 上海',follow:'关注',
+  n1:'你好！巴迪今天怎么样？',msg:'私信',n2_t:'章玉 赞了你的动态',n2_s:'"巴迪和训练打卡"',n3_t:'李梅 关注了你',n3_s:'德国牧羊犬 · 上海',follow:'关注',
   n4_t:'预约已确认',n4_s:'王丽医生 · 6月15日 10:30',n5_t:'积分到账',n5_s:'完成训练 +50 积分',n6_t:'精油即将用尽',n6_s:'香茅精油 — 去商城补货',
   t_5min:'5 分钟前',t_12min:'12 分钟前',t_1h:'1 小时前',t_2h:'2 小时前',t_3h:'3 小时前',t_5h:'5 小时前',t_5min2:'5分钟',n1b:'你好！巴迪今天怎么样？',msg2:'训练建议太棒了！',msg3:'周六狗公园见？',
-  c1:'你好 Marco！巴迪今天怎么样？🐕',c2:'很好！今早把训练全部完成了',c3:'太好了！Mochi 昨晚没睡好，项圈只记录到4小时睡眠',c4:'试试减少下午的活动量？医生之前是这么建议的',chat_ph:'发消息...',
+  c1:'你好 Marco！巴迪今天怎么样？',c2:'很好！今早把训练全部完成了',c3:'太好了！Mochi 昨晚没睡好，项圈只记录到4小时睡眠',c4:'试试减少下午的活动量？医生之前是这么建议的',chat_ph:'发消息...',
   prof_sub:'金毛寻回犬 · 公 · 3岁',neutered:'已绝育',pro_plan:'Pro 会员',health:'健康',points:'积分',rank:'排名',streak_d:'连签',
   hw_connected:'已连接设备',collar_s2:'智能项圈 S2',collar_st:'GPS 在线 · 香薰扩散开启',online:'在线',bat78:'电量 78%',bowl_b1:'智能碗 B1',bowl_st:'称重在线 · WiFi',online2:'在线',bat91:'电量 91%',
   health_rec:'健康档案',vacc:'疫苗接种',vacc_d:'最近：2024年3月',ok:'正常',antiparas:'驱虫',antiparas_d:'项圈 · 香茅精油',active:'生效中',records:'就诊记录',records_d:'已记录 3 次',
@@ -942,7 +953,7 @@ const strings={
   cpn1_d:'狗粮 · 满¥99可用',cpn2_n:'PetStyle 美容',cpn2_d:'首次预约 · 30天有效',cpn3_n:'平安宠物保险',cpn3_d:'首年专享',cpn4_n:'精油入门套装',cpn4_d:'香茅 + 薰衣草 10ml',cpn5_n:'在线兽医问诊',cpn5_d:'视频问诊 · 60天有效',
   p1_n:'PetHarmony 项圈 S3',p1_d:'GPS + 高级传感器 · 钛合金',buy:'购买',p2_n:'智能碗 B2',p2_d:'称重 + 自动投喂',buy2:'购买',p3_n:'精油礼盒 4支装',p3_d:'香茅·薰衣草·印楝·天竺葵',buy3:'购买',
   current_plan:'当前会员',pro:'Pro 会员',per_mo:'/月',pro1:'360° 健康评分',pro2:'就诊前完整报告',pro3:'高级健康预警',starter:'入门套装',one_time:' 一次性',starter_d:'项圈 + 智能碗 + 3个月 Pro',buy_bundle:'购买套装',
-  tab_friends:'关注',tab_trending:'热门',tab_suggested:'推荐',post1:'巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？💪',t_golden:'金毛',t_training:'训练',share:'分享',post2:'项圈检测到 Mochi 只睡了4小时。医生建议减少下午的活动量。',t_health:'健康',t_sleep:'睡眠',share2:'分享',post3:'用500训练积分兑换了皇家狗粮券，积分系统太有动力了！🎁',t_shop:'商城',t_save:'省钱',share3:'分享',post_ph:'分享一条爱宠动态...',
+  tab_friends:'关注',tab_trending:'热门',tab_suggested:'推荐',post1:'巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？',t_golden:'金毛',t_training:'训练',share:'分享',post2:'项圈检测到 Mochi 只睡了4小时。医生建议减少下午的活动量。',t_health:'健康',t_sleep:'睡眠',share2:'分享',post3:'用500训练积分兑换了皇家狗粮券，积分系统太有动力了！',t_shop:'商城',t_save:'省钱',share3:'分享',post_ph:'分享一条爱宠动态...',
   m_all:'全部',m_vet:'兽医',m_park:'狗公园',m_grm:'美容',m_shop:'商店',nearby_list:'附近',open:'营业中',ml_vet1:'兽医 · 0.8 km · ★4.9',ml_park1:'中山公园狗活动区',ml_park1d:'狗公园 · 0.4 km',free2:'免费',ml_grm1:'美容 · 1.2 km · ★4.8',reserve:'可预约',ml_shop1:'宠物店 · 0.6 km · ★4.6',open2:'营业中',ml_vet2:'兽医 · 2.1 km · ★4.7',open3:'营业中',
   select_lang:'选择语言 / Select language',lang_note:'小程序顶部支持一键切换语言，类似支付宝的多语言模式。',
   nav_home:'首页',nav_pet:'爱宠',nav_train:'训练',nav_shop:'商城',nav_community:'社区',nav_collar:'智能项圈',nav_bowl:'智能碗',nav_vet:'在线问诊',nav_notif:'通知',nav_msgs:'消息',nav_map:'附近服务',nav_lang:'语言',nav_shop2:'积分商城',nav_product:'商品详情',nav_plan:'会员详情',nav_cart:'购物车',tab_academy:'专家课堂',cart_total:'合计',checkout:'结算',g_diet:'饮食扫描',g_train_c:'每日 +50',g_diet_c:'扫一扫得分',g_vet_c:'医生在线',g_map_c:'5 家在营',g_collar_c:'电量 78%',g_bowl_c:'今日 240g',g_redeem_c:'好礼热兑',g_mall_c:'618 大促',vet_search_ph:'搜索医生、科室或医院...',vf_all:'全部',vf_tele:'远程问诊',vf_ortho:'骨科',vf_emerg:'急诊',vf_near:'距离近',no_result:'没有找到匹配的结果',tab_diet:'饮食',nav_diet:'饮食扫描',nav_diet_log:'饮食记录',diet_history:'记录'},
@@ -953,10 +964,10 @@ const strings={
   ai_title:'AI Mood Detection',ai_body:'The collar senses Buddy is relaxed — a great moment to train ~',
   wellness:'Wellness Score',detail:'Details',excellent:'Excellent',m_walk:'Activity today',m_water:'Water',m_hr:'Avg heart rate',m_sleep:'Sleep',
   today_task:"Today's Tasks",task_progress:'2/3 · 50 pts to go',task1:'Complete "Sit & Stay" training',task2:'Log today\'s water intake',task3:'Share a pet moment',go:'Go',
-  n1:'Hi! How is Buddy today? 🐕',msg:'DM',n2_t:'Yuki Zhang liked your post',n2_s:'"Buddy & training"',n3_t:'Li Mei followed you',n3_s:'German Shepherd · Shanghai',follow:'Follow',
+  n1:'Hi! How is Buddy today? ',msg:'DM',n2_t:'Yuki Zhang liked your post',n2_s:'"Buddy & training"',n3_t:'Li Mei followed you',n3_s:'German Shepherd · Shanghai',follow:'Follow',
   n4_t:'Appointment confirmed',n4_s:'Dr. Wang · Jun 15, 10:30',n5_t:'Points credited',n5_s:'Training complete +50 pts',n6_t:'Oil running low',n6_s:'Citronella — restock in mall',
   t_5min:'5 min ago',t_12min:'12 min ago',t_1h:'1 hr ago',t_2h:'2 hrs ago',t_3h:'3 hrs ago',t_5h:'5 hrs ago',t_5min2:'5 min',n1b:'Hi! How is Buddy today?',msg2:'Great training tip!',msg3:'Dog park Saturday?',
-  c1:'Hi Marco! How is Buddy today? 🐕',c2:'Great! Finished all the training this morning',c3:'Nice! Mochi slept badly — collar logged only 4 hrs',c4:'Try reducing afternoon activity? The vet suggested that',chat_ph:'Message...',
+  c1:'Hi Marco! How is Buddy today? ',c2:'Great! Finished all the training this morning',c3:'Nice! Mochi slept badly — collar logged only 4 hrs',c4:'Try reducing afternoon activity? The vet suggested that',chat_ph:'Message...',
   prof_sub:'Golden Retriever · Male · 3 yrs',neutered:'Neutered',pro_plan:'Pro',health:'Health',points:'Points',rank:'Rank',streak_d:'Streak',
   hw_connected:'Connected devices',collar_s2:'Smart Collar S2',collar_st:'GPS online · Diffuser ON',online:'Online',bat78:'Battery 78%',bowl_b1:'Smart Bowl B1',bowl_st:'Scale online · WiFi',online2:'Online',bat91:'Battery 91%',
   health_rec:'Health record',vacc:'Vaccinations',vacc_d:'Last: Mar 2024',ok:'OK',antiparas:'Parasite control',antiparas_d:'Collar · citronella oil',active:'Active',records:'Visit records',records_d:'3 visits logged',
@@ -968,7 +979,7 @@ const strings={
   cpn1_d:'Dry food · min ¥99',cpn2_n:'PetStyle Grooming',cpn2_d:'First session · 30 days',cpn3_n:'Ping An Pet Insurance',cpn3_d:'First year exclusive',cpn4_n:'Essential oils starter',cpn4_d:'Citronella + Lavender 10ml',cpn5_n:'Online vet consult',cpn5_d:'Video consult · 60 days',
   p1_n:'PetHarmony Collar S3',p1_d:'GPS + advanced sensors · Titanium',buy:'Buy',p2_n:'Smart Bowl B2',p2_d:'Scale + auto feeder',buy2:'Buy',p3_n:'Oil gift box 4-pack',p3_d:'Citronella·Lavender·Neem·Geranium',buy3:'Buy',
   current_plan:'Current plan',pro:'Pro',per_mo:'/mo',pro1:'360° wellness score',pro2:'Full pre-visit report',pro3:'Advanced health alerts',starter:'Starter kit',one_time:' one-time',starter_d:'Collar + Bowl + 3 months Pro',buy_bundle:'Buy bundle',
-  tab_friends:'Following',tab_trending:'Trending',tab_suggested:'Suggested',post1:'Buddy finished his first agility course! Who else uses the training module? 💪',t_golden:'Golden',t_training:'Training',share:'Share',post2:'Collar logged only 4 hrs sleep for Mochi. Vet suggests less afternoon activity.',t_health:'Health',t_sleep:'Sleep',share2:'Share',post3:'Redeemed a Royal Canin voucher with 500 pts. The points system is so motivating! 🎁',t_shop:'Shop',t_save:'Save',share3:'Share',post_ph:'Share a pet moment...',
+  tab_friends:'Following',tab_trending:'Trending',tab_suggested:'Suggested',post1:'Buddy finished his first agility course! Who else uses the training module? ',t_golden:'Golden',t_training:'Training',share:'Share',post2:'Collar logged only 4 hrs sleep for Mochi. Vet suggests less afternoon activity.',t_health:'Health',t_sleep:'Sleep',share2:'Share',post3:'Redeemed a Royal Canin voucher with 500 pts. The points system is so motivating! ',t_shop:'Shop',t_save:'Save',share3:'Share',post_ph:'Share a pet moment...',
   m_all:'All',m_vet:'Vet',m_park:'Dog park',m_grm:'Grooming',m_shop:'Shop',nearby_list:'Nearby',open:'Open',ml_vet1:'Vet · 0.8 km · ★4.9',ml_park1:'Zhongshan Park dog area',ml_park1d:'Dog park · 0.4 km',free2:'Free',ml_grm1:'Grooming · 1.2 km · ★4.8',reserve:'Book',ml_shop1:'Pet shop · 0.6 km · ★4.6',open2:'Open',ml_vet2:'Vet · 2.1 km · ★4.7',open3:'Open',
   select_lang:'Select language',lang_note:'The mini program supports one-tap language switching at the top, like Alipay.',
   nav_home:'Home',nav_pet:'Pet',nav_train:'Training',nav_shop:'Mall',nav_community:'Community',nav_collar:'Collar S2',nav_bowl:'Bowl B1',nav_vet:'Vet',nav_notif:'Notifications',nav_msgs:'Messages',nav_map:'Nearby',nav_lang:'Language',nav_shop2:'Rewards Mall',nav_product:'Product',nav_plan:'Membership',nav_cart:'Cart',tab_academy:'Academy',cart_total:'Total',checkout:'Checkout',g_diet:'Food scan',g_train_c:'Daily +50',g_diet_c:'Scan & score',g_vet_c:'Vets online',g_map_c:'5 open now',g_collar_c:'Battery 78%',g_bowl_c:'240g today',g_redeem_c:'Hot rewards',g_mall_c:'618 Sale',vet_search_ph:'Search doctor, specialty or clinic...',vf_all:'All',vf_tele:'Teleconsult',vf_ortho:'Orthopedics',vf_emerg:'Emergency',vf_near:'Nearby',no_result:'No matching results',tab_diet:'Diet',nav_diet:'Food Scan',nav_diet_log:'Diet Log',diet_history:'Log'},
@@ -979,10 +990,10 @@ const strings={
   ai_title:'AI riconoscimento umore',ai_body:'Il collare rileva che Buddy è rilassato — momento ideale per allenarsi ~',
   wellness:'Score benessere',detail:'Dettagli',excellent:'Ottimo',m_walk:'Attività oggi',m_water:'Acqua',m_hr:'Battito medio',m_sleep:'Sonno',
   today_task:'Attività di oggi',task_progress:'2/3 · 50 punti rimasti',task1:'Completa training "Seduto & Resta"',task2:'Registra acqua di oggi',task3:'Condividi un momento',go:'Vai',
-  n1:'Ciao! Come sta Buddy oggi? 🐕',msg:'DM',n2_t:'Yuki Zhang ha messo like',n2_s:'"Buddy e il training"',n3_t:'Li Mei ha iniziato a seguirti',n3_s:'Pastore Tedesco · Shanghai',follow:'Segui',
+  n1:'Ciao! Come sta Buddy oggi? ',msg:'DM',n2_t:'Yuki Zhang ha messo like',n2_s:'"Buddy e il training"',n3_t:'Li Mei ha iniziato a seguirti',n3_s:'Pastore Tedesco · Shanghai',follow:'Segui',
   n4_t:'Visita confermata',n4_s:'Dr. Wang · 15 giu 10:30',n5_t:'Punti accreditati',n5_s:'Training completato +50 pt',n6_t:'Olio in esaurimento',n6_s:'Citronella — riordina nel negozio',
   t_5min:'5 min fa',t_12min:'12 min fa',t_1h:'1 ora fa',t_2h:'2 ore fa',t_3h:'3 ore fa',t_5h:'5 ore fa',t_5min2:'5 min',n1b:'Ciao! Come sta Buddy oggi?',msg2:'Ottimo consiglio per il training!',msg3:'Al dog park sabato?',
-  c1:'Ciao Marco! Come sta Buddy oggi? 🐕',c2:'Benissimo! Ha completato tutto il training stamattina',c3:'Bene! Mochi ha dormito male — il collare ha letto solo 4 ore',c4:'Prova a ridurre l\'attività pomeridiana? Lo suggeriva il vet',chat_ph:'Messaggio...',
+  c1:'Ciao Marco! Come sta Buddy oggi? ',c2:'Benissimo! Ha completato tutto il training stamattina',c3:'Bene! Mochi ha dormito male — il collare ha letto solo 4 ore',c4:'Prova a ridurre l\'attività pomeridiana? Lo suggeriva il vet',chat_ph:'Messaggio...',
   prof_sub:'Golden Retriever · M · 3 anni',neutered:'Sterilizzato',pro_plan:'Pro',health:'Salute',points:'Punti',rank:'Rank',streak_d:'Streak',
   hw_connected:'Dispositivi connessi',collar_s2:'Collare S2',collar_st:'GPS online · Diffusore ON',online:'Online',bat78:'Batteria 78%',bowl_b1:'Ciotola B1',bowl_st:'Bilancia online · WiFi',online2:'Online',bat91:'Batteria 91%',
   health_rec:'Cartella clinica',vacc:'Vaccinazioni',vacc_d:'Ultima: Mar 2024',ok:'Ok',antiparas:'Antiparassitario',antiparas_d:'Collare · olio citronella',active:'Attivo',records:'Visite registrate',records_d:'3 visite',
@@ -994,7 +1005,7 @@ const strings={
   cpn1_d:'Cibo secco · min ¥99',cpn2_n:'Toelettatura PetStyle',cpn2_d:'Prima seduta · 30 giorni',cpn3_n:'Ping An Pet Insurance',cpn3_d:'Primo anno esclusivo',cpn4_n:'Kit oli starter',cpn4_d:'Citronella + Lavanda 10ml',cpn5_n:'Consulto vet online',cpn5_d:'Video consulto · 60 giorni',
   p1_n:'PetHarmony Collare S3',p1_d:'GPS + sensori avanzati · Titanio',buy:'Acquista',p2_n:'Ciotola Smart B2',p2_d:'Bilancia + dispenser auto',buy2:'Acquista',p3_n:'Kit oli 4 pezzi',p3_d:'Citronella·Lavanda·Neem·Geranio',buy3:'Acquista',
   current_plan:'Piano attuale',pro:'Pro',per_mo:'/mese',pro1:'Score benessere 360°',pro2:'Report pre-visita completo',pro3:'Alert salute avanzati',starter:'Starter kit',one_time:' una tantum',starter_d:'Collare + Ciotola + 3 mesi Pro',buy_bundle:'Acquista bundle',
-  tab_friends:'Seguiti',tab_trending:'In voga',tab_suggested:'Suggeriti',post1:'Buddy ha completato il primo percorso agility! Chi altro usa il training? 💪',t_golden:'Golden',t_training:'Training',share:'Condividi',post2:'Il collare ha letto solo 4 ore di sonno per Mochi. Il vet suggerisce meno attività pomeridiana.',t_health:'Salute',t_sleep:'Sonno',share2:'Condividi',post3:'Riscattato un buono Royal Canin con 500 punti. Il sistema punti motiva tantissimo! 🎁',t_shop:'Shop',t_save:'Risparmio',share3:'Condividi',post_ph:'Condividi un momento...',
+  tab_friends:'Seguiti',tab_trending:'In voga',tab_suggested:'Suggeriti',post1:'Buddy ha completato il primo percorso agility! Chi altro usa il training? ',t_golden:'Golden',t_training:'Training',share:'Condividi',post2:'Il collare ha letto solo 4 ore di sonno per Mochi. Il vet suggerisce meno attività pomeridiana.',t_health:'Salute',t_sleep:'Sonno',share2:'Condividi',post3:'Riscattato un buono Royal Canin con 500 punti. Il sistema punti motiva tantissimo! ',t_shop:'Shop',t_save:'Risparmio',share3:'Condividi',post_ph:'Condividi un momento...',
   m_all:'Tutti',m_vet:'Vet',m_park:'Dog park',m_grm:'Toeletta',m_shop:'Shop',nearby_list:'Vicino a te',open:'Aperto',ml_vet1:'Vet · 0.8 km · ★4.9',ml_park1:'Zhongshan Park dog area',ml_park1d:'Dog park · 0.4 km',free2:'Libero',ml_grm1:'Toeletta · 1.2 km · ★4.8',reserve:'Prenota',ml_shop1:'Pet shop · 0.6 km · ★4.6',open2:'Aperto',ml_vet2:'Vet · 2.1 km · ★4.7',open3:'Aperto',
   select_lang:'Seleziona lingua',lang_note:'Il mini program supporta il cambio lingua con un tocco in alto, come Alipay.',
   nav_home:'Home',nav_pet:'Pet',nav_train:'Training',nav_shop:'Negozio',nav_community:'Community',nav_collar:'Collare S2',nav_bowl:'Ciotola B1',nav_vet:'Veterinario',nav_notif:'Notifiche',nav_msgs:'Messaggi',nav_map:'Vicino a te',nav_lang:'Lingua',nav_shop2:'Negozio Premi',nav_product:'Prodotto',nav_plan:'Abbonamento',nav_cart:'Carrello',tab_academy:'Accademia',cart_total:'Totale',checkout:'Paga',g_diet:'Scan cibo',g_train_c:'Giorno +50',g_diet_c:'Scansiona',g_vet_c:'Vet online',g_map_c:'5 aperti',g_collar_c:'Batteria 78%',g_bowl_c:'240g oggi',g_redeem_c:'Premi caldi',g_mall_c:'Saldi 618',vet_search_ph:'Cerca medico, specialità o clinica...',vf_all:'Tutti',vf_tele:'Teleconsulto',vf_ortho:'Ortopedia',vf_emerg:'Emergenza',vf_near:'Vicino',no_result:'Nessun risultato',tab_diet:'Dieta',nav_diet:'Scan Cibo',nav_diet_log:'Diario',diet_history:'Diario'}
@@ -1008,9 +1019,9 @@ const placeData={
 };
 
 const rankData={
- zh:[{n:'Mochi',o:'小王',p:1480,s:12,d:'🐩'},{n:'巴迪',o:'Marco（你）',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'李梅',p:1190,s:9,d:'🐺'},{n:'豆豆',o:'陈芳',p:980,s:5,d:'🐾'},{n:'旺财',o:'张伟',p:870,s:4,d:'🦮'}],
- en:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12,d:'🐩'},{n:'Buddy',o:'Marco (you)',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'Li Mei',p:1190,s:9,d:'🐺'},{n:'Doudou',o:'Chen Fang',p:980,s:5,d:'🐾'},{n:'Wangcai',o:'Zhang Wei',p:870,s:4,d:'🦮'}],
- it:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12,d:'🐩'},{n:'Buddy',o:'Marco (tu)',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'Li Mei',p:1190,s:9,d:'🐺'},{n:'Doudou',o:'Chen Fang',p:980,s:5,d:'🐾'},{n:'Wangcai',o:'Zhang Wei',p:870,s:4,d:'🦮'}]
+ zh:[{n:'Mochi',o:'小王',p:1480,s:12},{n:'巴迪',o:'Marco（你）',p:1240,s:7,me:true},{n:'Luna',o:'李梅',p:1190,s:9},{n:'豆豆',o:'陈芳',p:980,s:5},{n:'旺财',o:'张伟',p:870,s:4}],
+ en:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12},{n:'Buddy',o:'Marco (you)',p:1240,s:7,me:true},{n:'Luna',o:'Li Mei',p:1190,s:9},{n:'Doudou',o:'Chen Fang',p:980,s:5},{n:'Wangcai',o:'Zhang Wei',p:870,s:4}],
+ it:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12},{n:'Buddy',o:'Marco (tu)',p:1240,s:7,me:true},{n:'Luna',o:'Li Mei',p:1190,s:9},{n:'Doudou',o:'Chen Fang',p:980,s:5},{n:'Wangcai',o:'Zhang Wei',p:870,s:4}]
 };
 
 const trL={
@@ -1249,25 +1260,25 @@ function A2(k){return ({zh:{share:'分享'},en:{share:'Share'},it:{share:'Condiv
 // ===== DIET / FOOD SCAN (Bitepal-inspired) =====
 const foodDB={
  zh:[
-  {key:'rc',emoji:'🥩',name:'皇家金毛专用粮',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'优质主粮',macros:[['蛋白质',30,'#2BAA9B'],['脂肪',16,'#F2B134'],['碳水',38,'#E8743B']],note:'营养均衡的优质狗粮，蛋白质充足，适合金毛日常主食。',ok:true},
-  {key:'chk',emoji:'🍗',name:'水煮鸡胸肉',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'健康加餐',macros:[['蛋白质',31,'#2BAA9B'],['脂肪',4,'#F2B134'],['碳水',0,'#E8743B']],note:'高蛋白低脂，是很好的训练奖励，注意不要加盐。',ok:true},
-  {key:'car',emoji:'🥕',name:'胡萝卜块',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'健康零食',macros:[['蛋白质',1,'#2BAA9B'],['脂肪',0,'#F2B134'],['碳水',10,'#E8743B']],note:'富含纤维和维生素，低热量，适合作为零食，但不能替代主食。',ok:true},
-  {key:'choc',emoji:'🍫',name:'巧克力',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'危险！禁止',macros:[['蛋白质',8,'#2BAA9B'],['脂肪',31,'#F2B134'],['碳水',61,'#E8743B']],note:'⚠️ 巧克力含可可碱，对狗有毒！可引起呕吐、心律失常甚至死亡。请立即收起。',ok:false},
-  {key:'bone',emoji:'🦴',name:'熟鸡骨',score:20,grade:'D',cals:'—',pts:0,tag:'有风险',macros:[['蛋白质',20,'#2BAA9B'],['脂肪',12,'#F2B134'],['碳水',0,'#E8743B']],note:'⚠️ 熟鸡骨易碎裂，可能划伤食道或肠道。建议改用专用磨牙骨。',ok:false}
+  {key:'rc',img:'foodKibble',name:'皇家金毛专用粮',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'优质主粮',macros:[['蛋白质',30,'#2BAA9B'],['脂肪',16,'#F2B134'],['碳水',38,'#E8743B']],note:'营养均衡的优质狗粮，蛋白质充足，适合金毛日常主食。',ok:true},
+  {key:'chk',img:'foodChicken',name:'水煮鸡胸肉',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'健康加餐',macros:[['蛋白质',31,'#2BAA9B'],['脂肪',4,'#F2B134'],['碳水',0,'#E8743B']],note:'高蛋白低脂，是很好的训练奖励，注意不要加盐。',ok:true},
+  {key:'car',img:'foodCarrot',name:'胡萝卜块',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'健康零食',macros:[['蛋白质',1,'#2BAA9B'],['脂肪',0,'#F2B134'],['碳水',10,'#E8743B']],note:'富含纤维和维生素，低热量，适合作为零食，但不能替代主食。',ok:true},
+  {key:'choc',img:'foodChoc',name:'巧克力',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'危险！禁止',macros:[['蛋白质',8,'#2BAA9B'],['脂肪',31,'#F2B134'],['碳水',61,'#E8743B']],note:'巧克力含可可碱，对狗有毒！可引起呕吐、心律失常甚至死亡。请立即收起。',ok:false},
+  {key:'bone',img:'foodBone',name:'熟鸡骨',score:20,grade:'D',cals:'—',pts:0,tag:'有风险',macros:[['蛋白质',20,'#2BAA9B'],['脂肪',12,'#F2B134'],['碳水',0,'#E8743B']],note:'熟鸡骨易碎裂，可能划伤食道或肠道。建议改用专用磨牙骨。',ok:false}
  ],
  en:[
-  {key:'rc',emoji:'🥩',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Quality kibble',macros:[['Protein',30,'#2BAA9B'],['Fat',16,'#F2B134'],['Carbs',38,'#E8743B']],note:'Well-balanced premium kibble, ample protein, ideal as a Golden\'s staple.',ok:true},
-  {key:'chk',emoji:'🍗',name:'Boiled chicken breast',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Healthy treat',macros:[['Protein',31,'#2BAA9B'],['Fat',4,'#F2B134'],['Carbs',0,'#E8743B']],note:'High protein, low fat — a great training reward. Keep it unsalted.',ok:true},
-  {key:'car',emoji:'🥕',name:'Carrot pieces',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Healthy snack',macros:[['Protein',1,'#2BAA9B'],['Fat',0,'#F2B134'],['Carbs',10,'#E8743B']],note:'Rich in fibre and vitamins, low calorie. Fine as a snack, not a meal replacement.',ok:true},
-  {key:'choc',emoji:'🍫',name:'Chocolate',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Dangerous!',macros:[['Protein',8,'#2BAA9B'],['Fat',31,'#F2B134'],['Carbs',61,'#E8743B']],note:'⚠️ Chocolate contains theobromine, toxic to dogs! Can cause vomiting, arrhythmia, even death. Remove immediately.',ok:false},
-  {key:'bone',emoji:'🦴',name:'Cooked chicken bone',score:20,grade:'D',cals:'—',pts:0,tag:'Risky',macros:[['Protein',20,'#2BAA9B'],['Fat',12,'#F2B134'],['Carbs',0,'#E8743B']],note:'⚠️ Cooked bones splinter and can injure the throat or gut. Use a proper chew bone instead.',ok:false}
+  {key:'rc',img:'foodKibble',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Quality kibble',macros:[['Protein',30,'#2BAA9B'],['Fat',16,'#F2B134'],['Carbs',38,'#E8743B']],note:'Well-balanced premium kibble, ample protein, ideal as a Golden\'s staple.',ok:true},
+  {key:'chk',img:'foodChicken',name:'Boiled chicken breast',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Healthy treat',macros:[['Protein',31,'#2BAA9B'],['Fat',4,'#F2B134'],['Carbs',0,'#E8743B']],note:'High protein, low fat — a great training reward. Keep it unsalted.',ok:true},
+  {key:'car',img:'foodCarrot',name:'Carrot pieces',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Healthy snack',macros:[['Protein',1,'#2BAA9B'],['Fat',0,'#F2B134'],['Carbs',10,'#E8743B']],note:'Rich in fibre and vitamins, low calorie. Fine as a snack, not a meal replacement.',ok:true},
+  {key:'choc',img:'foodChoc',name:'Chocolate',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Dangerous!',macros:[['Protein',8,'#2BAA9B'],['Fat',31,'#F2B134'],['Carbs',61,'#E8743B']],note:'Chocolate contains theobromine, toxic to dogs! Can cause vomiting, arrhythmia, even death. Remove immediately.',ok:false},
+  {key:'bone',img:'foodBone',name:'Cooked chicken bone',score:20,grade:'D',cals:'—',pts:0,tag:'Risky',macros:[['Protein',20,'#2BAA9B'],['Fat',12,'#F2B134'],['Carbs',0,'#E8743B']],note:'Cooked bones splinter and can injure the throat or gut. Use a proper chew bone instead.',ok:false}
  ],
  it:[
-  {key:'rc',emoji:'🥩',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Crocchette top',macros:[['Proteine',30,'#2BAA9B'],['Grassi',16,'#F2B134'],['Carbo',38,'#E8743B']],note:'Crocchette premium ben bilanciate, proteine abbondanti, ideali come base per un Golden.',ok:true},
-  {key:'chk',emoji:'🍗',name:'Petto di pollo bollito',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Spuntino sano',macros:[['Proteine',31,'#2BAA9B'],['Grassi',4,'#F2B134'],['Carbo',0,'#E8743B']],note:'Tante proteine, pochi grassi — ottimo premio nel training. Senza sale.',ok:true},
-  {key:'car',emoji:'🥕',name:'Pezzi di carota',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Snack sano',macros:[['Proteine',1,'#2BAA9B'],['Grassi',0,'#F2B134'],['Carbo',10,'#E8743B']],note:'Ricca di fibre e vitamine, poche calorie. Ok come snack, non sostituisce il pasto.',ok:true},
-  {key:'choc',emoji:'🍫',name:'Cioccolato',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Pericoloso!',macros:[['Proteine',8,'#2BAA9B'],['Grassi',31,'#F2B134'],['Carbo',61,'#E8743B']],note:'⚠️ Il cioccolato contiene teobromina, tossica per i cani! Può causare vomito, aritmie, persino morte. Toglilo subito.',ok:false},
-  {key:'bone',emoji:'🦴',name:'Osso di pollo cotto',score:20,grade:'D',cals:'—',pts:0,tag:'Rischioso',macros:[['Proteine',20,'#2BAA9B'],['Grassi',12,'#F2B134'],['Carbo',0,'#E8743B']],note:'⚠️ Le ossa cotte si scheggiano e possono ferire gola o intestino. Usa un osso da masticare apposito.',ok:false}
+  {key:'rc',img:'foodKibble',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Crocchette top',macros:[['Proteine',30,'#2BAA9B'],['Grassi',16,'#F2B134'],['Carbo',38,'#E8743B']],note:'Crocchette premium ben bilanciate, proteine abbondanti, ideali come base per un Golden.',ok:true},
+  {key:'chk',img:'foodChicken',name:'Petto di pollo bollito',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Spuntino sano',macros:[['Proteine',31,'#2BAA9B'],['Grassi',4,'#F2B134'],['Carbo',0,'#E8743B']],note:'Tante proteine, pochi grassi — ottimo premio nel training. Senza sale.',ok:true},
+  {key:'car',img:'foodCarrot',name:'Pezzi di carota',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Snack sano',macros:[['Proteine',1,'#2BAA9B'],['Grassi',0,'#F2B134'],['Carbo',10,'#E8743B']],note:'Ricca di fibre e vitamine, poche calorie. Ok come snack, non sostituisce il pasto.',ok:true},
+  {key:'choc',img:'foodChoc',name:'Cioccolato',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Pericoloso!',macros:[['Proteine',8,'#2BAA9B'],['Grassi',31,'#F2B134'],['Carbo',61,'#E8743B']],note:'Il cioccolato contiene teobromina, tossica per i cani! Può causare vomito, aritmie, persino morte. Toglilo subito.',ok:false},
+  {key:'bone',img:'foodBone',name:'Osso di pollo cotto',score:20,grade:'D',cals:'—',pts:0,tag:'Rischioso',macros:[['Proteine',20,'#2BAA9B'],['Grassi',12,'#F2B134'],['Carbo',0,'#E8743B']],note:'Le ossa cotte si scheggiano e possono ferire gola o intestino. Usa un osso da masticare apposito.',ok:false}
  ]
 };
 const dietL={
@@ -1281,7 +1292,7 @@ function gradeColor(g){return g==='A'?'#2BAA9B':g==='B'?'#5FBF8E':g==='C'?'#F2B1
 
 function dietTabHTML(){
   const L=dietL[curLang];
-  return `<div class="ai-card" style="margin:10px 10px"><div class="ai-emoji">🍖</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--teal-dk)">${L.title}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.sub}</div></div></div>
+  return `<div class="ai-card" style="margin:10px 10px"><div class="ai-emoji"><i class="ti ti-bone" style="font-size:26px;color:var(--coral)"></i></div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--teal-dk)">${L.title}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.sub}</div></div></div>
   <div class="sec"><button class="btn-g" onclick="openDiet()"><i class="ti ti-scan"></i> ${L.scanbtn}</button>
   <div style="font-size:11px;color:var(--ink2);margin-top:10px;line-height:1.5">${L.tip}</div></div>
   <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.daily}</div><div class="score-wrap"><div class="diet-score-ring" style="background:conic-gradient(var(--teal) 0% ${dietDailyPct()}%,var(--line) ${dietDailyPct()}% 100%)"><div class="diet-score-inner"><div style="font-size:24px;font-weight:800;color:var(--teal)">${dietLog.filter(d=>d.ok).length}</div><div style="font-size:9px;color:var(--ink2)">${L.today}</div></div></div><div class="stat-mini"><div class="smr"><span class="k">${L.earned}</span><span class="v" style="color:var(--coral)">+${dietEarned} ${L.pts}</span></div><div class="smr"><span class="k">${L.today}</span><span class="v">${dietLog.length}</span></div><button class="btn-o btn-sm" style="width:100%;margin-top:4px" onclick="goTo('s-diet-log')">${L.title.includes('AI')?({zh:'查看记录',en:'View log',it:'Vedi diario'})[curLang]:''}</button></div></div></div>`;
@@ -1295,18 +1306,18 @@ function renderDiet(){
   <div style="padding:12px 12px 0">
     <div class="scan-frame" id="scan-frame">
       <div class="corner scan-c1"></div><div class="corner scan-c2"></div><div class="corner scan-c3"></div><div class="corner scan-c4"></div>
-      <div class="scan-food" id="scan-food">🍽️</div>
+      <div class="scan-food" id="scan-food"><i class="ti ti-camera" style="font-size:54px;color:#666"></i></div>
       <div class="scan-line" id="scan-line" style="display:none"></div>
     </div>
   </div>
   <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.pick}</div>
-    ${foodDB[curLang].map(f=>`<div class="food-opt" onclick="doScan('${f.key}')"><div class="food-emoji" style="background:${f.ok?'var(--teal-l)':'var(--coral-l)'}">${f.emoji}</div><div class="tx"><div class="tm">${f.name}</div><div class="ts">${f.tag}</div></div><i class="ti ti-scan" style="color:var(--ink2);font-size:20px"></i></div>`).join('')}
+    ${foodDB[curLang].map(f=>`<div class="food-opt" onclick="doScan('${f.key}')"><div class="food-emoji" style="background:${f.ok?'var(--teal-l)':'var(--coral-l)'}">${svg(f.img)}</div><div class="tx"><div class="tm">${f.name}</div><div class="ts">${f.tag}</div></div><i class="ti ti-scan" style="color:var(--ink2);font-size:20px"></i></div>`).join('')}
   </div>
   <div id="diet-result"></div>`;
 }
 function doScan(key){
   const L=dietL[curLang];const f=foodDB[curLang].find(x=>x.key===key);
-  document.getElementById('scan-food').textContent=f.emoji;
+  document.getElementById('scan-food').innerHTML=svg(f.img);
   document.getElementById('scan-line').style.display='block';
   const frame=document.getElementById('scan-frame');frame.style.outline='2px solid var(--amber)';
   document.getElementById('diet-result').innerHTML=`<div class="sec" style="text-align:center;color:var(--ink2)"><i class="ti ti-loader-2" style="font-size:28px"></i><div style="margin-top:6px;font-size:13px">${L.scanning}</div></div>`;
@@ -1322,7 +1333,7 @@ function showDietResult(f){
   document.getElementById('diet-result').innerHTML=`
   <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.result}</div>
     <div class="score-wrap"><div class="diet-score-ring" style="background:conic-gradient(${gc} 0% ${f.score}%,var(--line) ${f.score}% 100%)"><div class="diet-score-inner"><div style="font-size:26px;font-weight:800;color:${gc}">${f.score}</div><div style="font-size:9px;color:var(--ink2)">/100</div></div></div>
-    <div class="stat-mini"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:30px">${f.emoji}</span><div><div style="font-size:15px;font-weight:700">${f.name}</div><div style="font-size:11px;color:var(--ink2)">${f.tag}</div></div></div>
+    <div class="stat-mini"><div style="display:flex;align-items:center;gap:8px"><span class="food-emoji" style="width:46px;height:46px">${svg(f.img)}</span><div><div style="font-size:15px;font-weight:700">${f.name}</div><div style="font-size:11px;color:var(--ink2)">${f.tag}</div></div></div>
     <div class="smr" style="margin-top:8px"><span class="k">${L.grade}</span><span class="v"><span style="background:${gc};color:#fff;padding:1px 9px;border-radius:6px">${f.grade}</span></span></div>
     <div class="smr"><span class="k">${L.cals}</span><span class="v">${f.cals}</span></div></div></div>
   </div>
@@ -1336,7 +1347,7 @@ function showDietResult(f){
 }
 function logDiet(key){
   const f=foodDB[curLang].find(x=>x.key===key);
-  dietLog.unshift({key:f.key,name:f.name,emoji:f.emoji,score:f.score,pts:f.pts,grade:f.grade,ok:f.ok,time:new Date()});
+  dietLog.unshift({key:f.key,name:f.name,img:f.img,score:f.score,pts:f.pts,grade:f.grade,ok:f.ok,time:new Date()});
   if(f.ok){pts+=f.pts;dietEarned+=f.pts;syncPts();}
   toast(f.ok?(dietL[curLang].award+' +'+f.pts):dietL[curLang].noaward);
   goTo('s-diet-log');
@@ -1345,7 +1356,7 @@ function renderDietLog(){
   const L=dietL[curLang];const c=document.getElementById('diet-log-content');
   if(dietLog.length===0){c.innerHTML=`<div style="text-align:center;padding:50px 20px;color:var(--ink2)"><i class="ti ti-clipboard-list" style="font-size:44px;opacity:.4"></i><div style="margin-top:10px;font-size:14px">${L.empty}</div></div>`;return;}
   c.innerHTML=`<div class="sec" style="margin:0 0 10px"><div class="stat2"><div class="sbox"><div class="sv" style="color:var(--coral)">+${dietEarned}</div><div class="sl">${L.earned} ${L.pts}</div></div><div class="sbox"><div class="sv">${dietLog.length}</div><div class="sl">${L.today}</div></div></div></div>`+
-  dietLog.map(d=>{const gc=gradeColor(d.grade);const tm=d.time.toLocaleTimeString(curLang==='zh'?'zh-CN':curLang,{hour:'2-digit',minute:'2-digit'});return `<div class="cart-item"><div class="food-emoji" style="background:${d.ok?'var(--teal-l)':'var(--coral-l)'};width:48px;height:48px;font-size:24px">${d.emoji}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${d.name}</div><div style="font-size:11px;color:var(--ink2);margin-top:2px">${tm} · <span style="color:${gc};font-weight:700">${d.grade}</span> · ${d.score}/100</div></div><span class="pill ${d.ok?'pt':'pc'}">${d.ok?'+'+d.pts:'0'}</span></div>`;}).join('');
+  dietLog.map(d=>{const gc=gradeColor(d.grade);const tm=d.time.toLocaleTimeString(curLang==='zh'?'zh-CN':curLang,{hour:'2-digit',minute:'2-digit'});return `<div class="cart-item"><div class="food-emoji" style="background:${d.ok?'var(--teal-l)':'var(--coral-l)'};width:48px;height:48px;font-size:24px">${svg(d.img)}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${d.name}</div><div style="font-size:11px;color:var(--ink2);margin-top:2px">${tm} · <span style="color:${gc};font-weight:700">${d.grade}</span> · ${d.score}/100</div></div><span class="pill ${d.ok?'pt':'pc'}">${d.ok?'+'+d.pts:'0'}</span></div>`;}).join('');
 }
 
 // ===== Expert Academy =====
@@ -1390,11 +1401,11 @@ function switchTrainingTab(t){
   if(t==='academy'){c.innerHTML=academyHTML();return;}
   if(t==='ranking'){
     let h='<div class="sec"><div class="sec-h"><span class="sec-bar"></span>'+L.rank_title+'</div>';
-    rankData[curLang].forEach((r,i)=>{const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';h+=`<div class="rank-row"><div class="rank-num ${cls}">${i+1}</div><div style="font-size:22px">${r.d}</div><div class="tx"><div class="tm" style="${r.me?'color:var(--coral)':''}">${r.n}</div><div class="ts">${r.o} · ${curLang==='zh'?'连续'+r.s+'天':curLang==='en'?'Streak '+r.s+'d':'Streak '+r.s+'gg'}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--coral)">${fmtPts(r.p)}</div><div style="font-size:10px;color:var(--ink2)">${L.pos}</div></div></div>`;});
+    rankData[curLang].forEach((r,i)=>{const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';h+=`<div class="rank-row"><div class="rank-num ${cls}">${i+1}</div><div class="uav" style="background:${['#E8743B','#2BAA9B','#7F77DD','#F2B134','#0C447C'][i%5]};width:34px;height:34px;font-size:13px">${r.n.charAt(0)}</div><div class="tx"><div class="tm" style="${r.me?'color:var(--coral)':''}">${r.n}</div><div class="ts">${r.o} · ${curLang==='zh'?'连续'+r.s+'天':curLang==='en'?'Streak '+r.s+'d':'Streak '+r.s+'gg'}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--coral)">${fmtPts(r.p)}</div><div style="font-size:10px;color:var(--ink2)">${L.pos}</div></div></div>`;});
     h+='</div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>'+L.mypos+'</div><div class="sbox"><div style="font-size:26px;font-weight:800;color:var(--coral)">#2</div><div style="font-size:12px;color:var(--ink2);margin-top:2px">'+L.of+'</div><div class="prog" style="margin-top:8px"><div class="pf" style="width:84%"></div></div><div style="font-size:11px;color:var(--ink2);margin-top:5px">'+L.to1st+'</div></div></div>';
     c.innerHTML=h;
   }else{
-    c.innerHTML=`<div class="sec"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:14px;font-weight:600">${L.progress}</span><span class="pill pp">${L.streak}</span></div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--ink2)">${L.done23}</span><span style="font-size:12px;color:var(--coral);font-weight:600">${L.avail}</span></div><div class="prog"><div class="pf" style="width:66%"></div></div></div><div class="ai-card" style="margin:8px 10px"><div class="ai-emoji">😌</div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--teal-dk)"><i class="ti ti-sparkles"></i> ${L.ai}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.ai2}</div></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.session}</div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e1}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e2}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row" id="ex3-row"><div class="ex-num">3</div><div class="tx"><div class="tm">${L.e3}</div><div class="ts">${L.min}</div></div><button class="btn-g btn-sm" onclick="completeEx()">${L.start50}</button></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.mypts}</div><div class="stat2"><div class="sbox"><div class="si" style="color:var(--coral)"><i class="ti ti-star"></i></div><div class="sv" id="pts-tr">${fmtPts(pts)}</div><div class="sl">${L.total}</div></div><div class="sbox"><div class="si" style="color:var(--amber-dk)"><i class="ti ti-gift"></i></div><div class="sv">100</div><div class="sl">${L.today}</div></div></div><button class="btn-g" style="margin-top:12px" onclick="goTo('s-shop')">${L.use}</button></div>`;
+    c.innerHTML=`<div class="sec"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:14px;font-weight:600">${L.progress}</span><span class="pill pp">${L.streak}</span></div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--ink2)">${L.done23}</span><span style="font-size:12px;color:var(--coral);font-weight:600">${L.avail}</span></div><div class="prog"><div class="pf" style="width:66%"></div></div></div><div class="ai-card" style="margin:8px 10px"><div class="ai-emoji"><i class="ti ti-mood-smile" style="font-size:26px;color:var(--teal)"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--teal-dk)"><i class="ti ti-sparkles"></i> ${L.ai}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.ai2}</div></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.session}</div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e1}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e2}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row" id="ex3-row"><div class="ex-num">3</div><div class="tx"><div class="tm">${L.e3}</div><div class="ts">${L.min}</div></div><button class="btn-g btn-sm" onclick="completeEx()">${L.start50}</button></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.mypts}</div><div class="stat2"><div class="sbox"><div class="si" style="color:var(--coral)"><i class="ti ti-star"></i></div><div class="sv" id="pts-tr">${fmtPts(pts)}</div><div class="sl">${L.total}</div></div><div class="sbox"><div class="si" style="color:var(--amber-dk)"><i class="ti ti-gift"></i></div><div class="sv">100</div><div class="sl">${L.today}</div></div></div><button class="btn-g" style="margin-top:12px" onclick="goTo('s-shop')">${L.use}</button></div>`;
   }
 }
 function completeEx(){pts+=50;syncPts();const r=document.getElementById('ex3-row');if(!r)return;const n=r.querySelector('.ex-num');n.className='ex-num ex-done';n.innerHTML='<i class="ti ti-check" style="font-size:13px"></i>';r.querySelector('button').outerHTML='<span class="pill pt">+50</span>';}
