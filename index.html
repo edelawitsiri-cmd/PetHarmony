@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>宠程 PetHarmony · 微信小程序原型</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --teal:#2BAA9B;--teal-d:#1B8478;--teal-l:#E4F5F2;--teal-dk:#0E5A50;
+  --amber:#F2B134;--amber-l:#FDF3DC;--amber-dk:#8A5E08;
+  --coral:#E8743B;--coral-l:#FCEAE0;--coral-dk:#9E3F12;
+  --grad:linear-gradient(120deg,#2BAA9B 0%,#5FBF8E 38%,#F2B134 72%,#E8743B 100%);
+  --grad-warm:linear-gradient(120deg,#F2B134 0%,#E8743B 100%);
+  --bg:#F2F3F5;--card:#fff;--ink:#1A1A1A;--ink2:#8A8F99;--ink3:#B8BCC4;--line:#EDEEF0;
+}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;background:#222}
+.ph{width:375px;margin:0 auto;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;height:812px;position:relative}
+
+/* ===== WeChat status bar + capsule (Mini Program signature) ===== */
+.wx-bar{height:44px;background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 18px;flex-shrink:0;position:relative;z-index:30}
+.wx-bar.ontint{background:transparent;position:absolute;top:0;left:0;right:0}
+.wx-time{font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+.wx-bar.ontint .wx-time,.wx-bar.ontint .wx-sysr i{color:#fff}
+.wx-sysr{display:flex;align-items:center;gap:5px;color:var(--ink);font-size:14px}
+.wx-cap{display:flex;align-items:center;gap:0;background:rgba(0,0,0,.04);border:.5px solid rgba(0,0,0,.06);border-radius:16px;height:30px;width:78px;justify-content:space-around;backdrop-filter:blur(8px)}
+.wx-bar.ontint .wx-cap{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.25)}
+.wx-cap i{font-size:17px;color:var(--ink)}
+.wx-bar.ontint .wx-cap i{color:#fff}
+.wx-cap .dot{font-size:19px;line-height:0}
+.hdr-chat{position:relative;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:2px}
+.hdr-chat i{font-size:19px;color:var(--ink)}
+.wx-bar.ontint .hdr-chat i{color:#fff}
+.hdr-badge{position:absolute;top:-2px;right:-2px;background:var(--coral);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;line-height:15px;text-align:center;border-radius:8px;border:1.5px solid #fff;padding:0 3px}
+.wx-cap-div{width:.5px;height:16px;background:rgba(0,0,0,.12)}
+.wx-bar.ontint .wx-cap-div{background:rgba(255,255,255,.3)}
+
+/* nav title bar under capsule for sub-pages */
+.nav{height:44px;display:flex;align-items:center;padding:0 14px;flex-shrink:0;background:var(--card);border-bottom:.5px solid var(--line);position:relative}
+.nav-t{font-size:16px;font-weight:600;color:var(--ink);position:absolute;left:50%;transform:translateX(-50%)}
+.back{background:none;border:none;cursor:pointer;color:var(--ink);font-size:22px;display:flex;align-items:center;justify-content:center;z-index:2;min-width:32px;min-height:40px;margin-left:-6px}
+
+.scr{display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--bg)}
+.scr.on{display:flex}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+.sec{background:var(--card);margin:8px 10px;border-radius:14px;padding:14px}
+.sec-flat{background:var(--card);padding:14px 16px;margin-bottom:8px}
+.sec-h{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.sec-h .more{margin-left:auto;font-size:12px;color:var(--ink2);font-weight:400;display:flex;align-items:center}
+.sec-bar{width:3px;height:14px;border-radius:2px;background:var(--grad-warm);display:inline-block}
+
+.row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:.5px solid var(--line)}
+.row:last-child{border-bottom:none;padding-bottom:0}
+.row:first-child{padding-top:0}
+.ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tx{flex:1;min-width:0}.tm{font-size:14px;font-weight:500;color:var(--ink)}.ts{font-size:12px;color:var(--ink2);margin-top:2px}
+.chev{color:var(--ink3);font-size:18px}
+
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.pt{background:var(--teal-l);color:var(--teal-dk)}
+.pa{background:var(--amber-l);color:var(--amber-dk)}
+.pc{background:var(--coral-l);color:var(--coral-dk)}
+.pp{background:#EEEDFE;color:#3C3489}
+.pb{background:#E6F1FB;color:#0C447C}
+.pg{background:#EAF3DE;color:#27500A}
+
+.btn-g{background:var(--grad-warm);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;width:100%;box-shadow:0 3px 10px rgba(232,116,59,.25)}
+.btn-teal{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.btn-o{background:none;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px;color:var(--ink);cursor:pointer;width:100%;font-weight:500}
+.btn-sm{width:auto;padding:7px 14px;font-size:12px;border-radius:8px}
+
+/* ===== bottom tab bar ===== */
+.tabbar{height:54px;background:var(--card);border-top:.5px solid var(--line);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;padding-bottom:0;position:relative;z-index:20}
+.tb{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:2px 6px;color:var(--ink2);font-size:10px;font-weight:500;position:relative}
+.tb i{font-size:23px}.tb.on{color:var(--coral)}
+.tb-c{position:relative}
+.tb-c::after{content:'';position:absolute;top:-2px;right:-4px;width:7px;height:7px;border-radius:50%;background:var(--coral);display:none}
+.tb-c.badge::after{display:block}
+
+/* ===== home hero ===== */
+.hero{background:var(--grad);padding:0 0 56px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:56px;background:var(--bg);border-radius:18px 18px 0 0}
+.hero-pet{display:flex;align-items:center;gap:12px;padding:6px 18px 16px}
+.pet-av{width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:2px solid rgba(255,255,255,.5);backdrop-filter:blur(4px)}
+.pet-name{font-size:18px;font-weight:700;color:#fff}
+.pet-sub{font-size:12px;color:rgba(255,255,255,.85);margin-top:2px}
+.pet-tags{display:flex;gap:5px;margin-top:5px}
+.htag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.22);color:#fff;backdrop-filter:blur(4px)}
+
+/* points strip on hero */
+.pts-strip{margin:0 18px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(8px);position:relative;z-index:2}
+.pts-big{font-size:24px;font-weight:800;color:#fff;line-height:1}
+.pts-lbl{font-size:11px;color:rgba(255,255,255,.85);margin-top:3px}
+
+/* check-in 签到 */
+.checkin{margin-left:auto;background:#fff;color:var(--coral);border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.checkin.done{background:rgba(255,255,255,.25);color:#fff}
+
+/* 九宫格 grid menu */
+.grid9{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 0}
+.g9{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;cursor:pointer;position:relative}
+.g9-ic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.g9-t{font-size:11px;color:var(--ink);font-weight:600}
+.g9-cap{font-size:9px;color:var(--ink2);margin-top:1px}
+.g9-badge{position:absolute;top:2px;right:18px;background:var(--coral);color:#fff;font-size:9px;font-weight:700;padding:0 5px;height:15px;line-height:15px;border-radius:8px;border:1.5px solid #fff}
+
+/* score ring */
+.score-wrap{display:flex;align-items:center;gap:16px}
+.score-ring{width:92px;height:92px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;background:conic-gradient(var(--teal) 0% 87%,var(--line) 87% 100%)}
+.score-ring::before{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--card)}
+.score-inner{position:relative;text-align:center}
+.score-n{font-size:28px;font-weight:800;color:var(--teal);line-height:1}
+.score-l{font-size:10px;color:var(--ink2);margin-top:1px}
+
+.stat-mini{flex:1;display:flex;flex-direction:column;gap:8px}
+.smr{display:flex;align-items:center;gap:8px;font-size:12px}
+.smr .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.smr .v{margin-left:auto;font-weight:600;color:var(--ink)}
+.smr .k{color:var(--ink2)}
+
+.stat2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sbox{background:var(--bg);border-radius:12px;padding:11px 12px}
+.sbox.c{text-align:center;padding:12px 6px}
+.sv{font-size:19px;font-weight:700;color:var(--ink)}.sl{font-size:11px;color:var(--ink2);margin-top:2px}.si{font-size:17px;margin-bottom:3px}
+.prog{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:7px}
+.pf{height:100%;border-radius:3px;background:var(--grad-warm)}
+
+/* horizontal scroll banner */
+.hscroll{display:flex;gap:10px;overflow-x:auto;padding:0 10px 4px;margin-bottom:8px}
+.hscroll::-webkit-scrollbar{display:none}
+.promo{flex:0 0 270px;border-radius:14px;padding:14px 16px;color:#fff;position:relative;overflow:hidden;min-height:84px}
+.promo-t{font-size:15px;font-weight:700}.promo-s{font-size:11px;opacity:.9;margin-top:3px;max-width:170px}
+.promo i{position:absolute;right:-6px;bottom:-10px;font-size:74px;opacity:.18}
+
+/* AI mood card */
+.ai-card{background:linear-gradient(120deg,#E4F5F2,#FDF3DC);border-radius:14px;padding:14px;margin:8px 10px;display:flex;align-items:center;gap:12px}
+.ai-emoji{width:48px;height:48px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+
+/* coupon */
+.cpn{display:flex;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--card);box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.cpn-l{background:var(--grad-warm);width:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;flex-shrink:0;color:#fff;position:relative}
+.cpn-l::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:10px;background:radial-gradient(circle at left, transparent 0 5px, var(--card) 5px) 0 0/10px 12px repeat-y}
+.cpn-v{font-size:22px;font-weight:800}.cpn-u{font-size:10px;opacity:.9}
+.cpn-r{flex:1;padding:11px 14px}
+.cpn-n{font-size:14px;font-weight:600;color:var(--ink)}.cpn-d{font-size:11px;color:var(--ink2);margin-top:2px}
+.cpn-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.cpn-p{font-size:12px;color:var(--coral);font-weight:700}
+.cpn-btn{font-size:12px;background:var(--grad-warm);color:#fff;border:none;border-radius:16px;padding:5px 14px;cursor:pointer;font-weight:600}
+.cpn-used{font-size:12px;background:var(--bg);color:var(--ink2);border:none;border-radius:16px;padding:5px 14px}
+
+/* social posts */
+.post-c{background:var(--card);margin:8px 10px;border-radius:14px;padding:14px}
+.post-h{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.uav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;color:#fff}
+.pn{font-size:13px;font-weight:600;color:var(--ink)}.pt2{font-size:11px;color:var(--ink2)}
+.p-txt{font-size:14px;color:var(--ink);line-height:1.55;margin-bottom:10px}
+.p-img{width:100%;height:150px;border-radius:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:center}
+.p-acts{display:flex;gap:20px;border-top:.5px solid var(--line);padding-top:10px}
+.pact{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2);background:none;border:none;cursor:pointer;padding:0}
+.pact i{font-size:18px}.pact.liked{color:var(--coral)}
+
+.compose-bar{background:var(--card);padding:9px 14px;border-top:.5px solid var(--line);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.compose-bar input{flex:1;border:none;border-radius:20px;padding:9px 14px;font-size:13px;color:var(--ink);background:var(--bg);outline:none}
+.c-send{background:var(--grad-warm);border:none;border-radius:50%;color:#fff;width:36px;height:36px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+
+/* chat */
+.msg-wrap{display:flex;flex-direction:column;gap:12px;padding:14px}
+.msg-row{display:flex;gap:8px;align-items:flex-start}
+.msg-row.me{flex-direction:row-reverse}
+.msg-av{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;color:#fff}
+.msg-bubble{background:var(--card);border-radius:6px;padding:9px 13px;font-size:14px;color:var(--ink);max-width:230px;line-height:1.4;position:relative}
+.msg-bubble.mine{background:#95EC69;color:#0A1F0A}
+
+/* tabs */
+.tab-row{display:flex;background:var(--card);flex-shrink:0;padding:0 6px}
+.tab{flex:1;padding:12px 4px;font-size:14px;text-align:center;border:none;background:none;cursor:pointer;color:var(--ink2);position:relative;font-weight:500}
+.tab.on{color:var(--ink);font-weight:700}
+.tab.on::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:22px;height:3px;border-radius:2px;background:var(--grad-warm)}
+
+/* notif */
+.notif-item{display:flex;align-items:flex-start;gap:11px;padding:13px 16px;border-bottom:.5px solid var(--line);background:var(--card);cursor:pointer}
+.notif-item.unread{position:relative}
+.notif-item.unread::before{content:'';position:absolute;left:6px;top:18px;width:6px;height:6px;border-radius:50%;background:var(--coral)}
+
+/* ranking */
+.rank-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:.5px solid var(--line)}
+.rank-row:last-child{border-bottom:none}
+.rank-num{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:var(--bg);color:var(--ink2)}
+.rank-1{background:var(--grad-warm);color:#fff}.rank-2{background:#D8DCE3;color:#444}.rank-3{background:#F0D9C4;color:#9E3F12}
+
+/* hardware cards */
+.hw-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card);margin-bottom:10px;cursor:pointer}
+.bat-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:5px}
+.bat-f{height:100%;border-radius:4px;background:var(--teal)}
+
+/* map */
+.map-area{background:#E8EBE6;height:220px;border-radius:14px;overflow:hidden;position:relative;margin-bottom:10px}
+.map-pin{position:absolute;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;transform:translateX(-50%)}
+.map-pin-ico{width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.map-pin-ico i{transform:rotate(45deg);font-size:14px}
+.map-info{background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+
+/* product */
+.prod-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px;background:var(--card)}
+.prod-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:42px}
+.prod-body{padding:11px 13px}
+.prem-card{border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:10px;background:var(--card)}
+
+.lang-btn{padding:13px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:15px;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:space-between;width:100%;font-weight:500}
+.lang-btn.on{border-color:var(--teal);background:var(--teal-l);color:var(--teal-dk)}
+.lang-btn .ck{color:var(--teal);font-size:20px;display:none}
+.lang-btn.on .ck{display:block}
+
+.ex-num{width:26px;height:26px;border-radius:50%;background:var(--teal-l);color:var(--teal-dk);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ex-done{background:var(--teal);color:#fff}
+
+/* ===== touch feedback: every interactive element dims briefly on tap ===== */
+button,[onclick],.g9,.hw-card,.row[onclick],.notif-item,.map-pin,.lang-btn,.tb,.tab,.pact,.cpn-btn{transition:opacity .12s,transform .12s;-webkit-user-select:none;user-select:none}
+.tapped{opacity:.55;transform:scale(.97)}
+/* make sure nothing decorative blocks taps */
+.hero::after{pointer-events:none}
+.promo i,.redpack i.bg{pointer-events:none}
+.g9-badge{pointer-events:none}
+
+/* ===== floating language button (always reachable) ===== */
+.lang-fab{position:absolute;right:14px;bottom:70px;z-index:40;width:46px;height:46px;border-radius:50%;background:var(--card);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.16);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:0}
+.lang-fab span{font-size:9px;font-weight:700;color:var(--coral);line-height:1.1}
+.lang-fab i{font-size:18px;color:var(--coral)}
+
+/* ===== language quick-switch sheet (bottom) ===== */
+.sheet-mask{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:50;display:none;align-items:flex-end}
+.sheet-mask.on{display:flex}
+.sheet{background:var(--card);width:100%;border-radius:18px 18px 0 0;padding:8px 0 14px;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 6px}
+.sheet-h{text-align:center;font-size:13px;color:var(--ink2);padding:6px 0 10px;border-bottom:.5px solid var(--line)}
+.sheet-opt{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;font-size:16px;color:var(--ink);cursor:pointer;border-bottom:.5px solid var(--line)}
+.sheet-opt .ck{color:var(--teal);font-size:22px;display:none}
+.sheet-opt.on{color:var(--teal-dk);font-weight:600}
+.sheet-opt.on .ck{display:block}
+.sheet-cancel{text-align:center;padding:15px;font-size:16px;color:var(--ink2);cursor:pointer;margin-top:6px}
+
+/* ===== toast ===== */
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.82);color:#fff;font-size:13px;padding:10px 18px;border-radius:22px;z-index:60;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:260px;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* red packet / festive accent */
+.redpack{background:linear-gradient(135deg,#E8743B,#D14826);border-radius:14px;padding:16px;margin:8px 10px;display:flex;align-items:center;gap:14px;color:#fff;position:relative;overflow:hidden;cursor:pointer}
+.redpack i.bg{position:absolute;right:-10px;bottom:-14px;font-size:80px;opacity:.2}
+.rp-coin{width:44px;height:44px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#8A5E08;font-weight:800}
+
+/* ===== photo / illustrated media ===== */
+.media{width:100%;border-radius:14px;overflow:hidden;display:block;background:var(--bg)}
+.media svg{display:block;width:100%;height:100%}
+.avatar-img{border-radius:16px;overflow:hidden;width:54px;height:54px;flex-shrink:0;border:2px solid rgba(255,255,255,.55)}
+.avatar-img svg{width:100%;height:100%;display:block}
+.g9-ic svg{width:26px;height:26px}
+.banner-img{flex:0 0 270px;border-radius:14px;overflow:hidden;position:relative;min-height:96px}
+.banner-img svg{width:100%;height:100%;display:block}
+.banner-cap{position:absolute;left:14px;bottom:12px;color:#fff;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+.banner-cap .t{font-size:15px;font-weight:700}.banner-cap .s{font-size:11px;opacity:.95;margin-top:2px}
+
+/* ===== product detail page ===== */
+.pd-hero{width:100%;height:240px;background:var(--bg);display:block}
+.pd-hero svg{width:100%;height:100%;display:block}
+.pd-price{font-size:24px;font-weight:800;color:var(--coral)}
+.pd-old{font-size:13px;color:var(--ink3);text-decoration:line-through;margin-left:8px}
+.spec-row{display:flex;padding:11px 0;border-bottom:.5px solid var(--line);font-size:13px}
+.spec-row:last-child{border-bottom:none}
+.spec-k{color:var(--ink2);width:110px;flex-shrink:0}
+.spec-v{color:var(--ink);font-weight:500;flex:1}
+.feat-chip{display:inline-flex;align-items:center;gap:5px;background:var(--teal-l);color:var(--teal-dk);font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;margin:0 6px 8px 0}
+.buybar{position:absolute;left:0;right:0;bottom:0;height:62px;background:var(--card);border-top:.5px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px;z-index:25}
+.buybar .ic{width:46px;text-align:center;color:var(--ink2);font-size:12px;cursor:pointer}
+.buybar .ic i{font-size:20px;display:block}
+.buybar .rel{position:relative}
+
+/* cart */
+.cart-badge{position:absolute;top:-5px;right:-8px;background:var(--coral);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;line-height:16px;text-align:center;border-radius:8px;padding:0 3px}
+.cart-item{display:flex;gap:11px;padding:12px;background:var(--card);border-radius:14px;margin-bottom:10px;align-items:center}
+.cart-thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;background:var(--bg)}
+.cart-thumb svg{width:100%;height:100%;display:block}
+.qty{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.qty button{width:28px;height:28px;border:none;background:var(--card);font-size:16px;cursor:pointer;color:var(--ink);padding:0}
+.qty span{width:30px;text-align:center;font-size:13px;font-weight:600}
+.cart-foot{position:absolute;left:0;right:0;bottom:0;height:62px;background:var(--card);border-top:.5px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:25}
+
+/* expert academy */
+.course-card{background:var(--card);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.course-thumb{height:120px;position:relative}
+.course-thumb svg{width:100%;height:100%;display:block}
+.course-dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:2px 7px;border-radius:6px}
+.course-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:var(--coral);font-size:22px}
+.expert-av{width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--teal-l)}
+.expert-av svg{width:100%;height:100%}
+
+/* plan detail */
+.plan-tier{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;cursor:pointer;position:relative}
+.plan-tier.featured{border:2px solid var(--teal);background:linear-gradient(180deg,var(--teal-l),var(--card) 60%)}
+.plan-badge{position:absolute;right:14px;top:14px;background:var(--grad-warm);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px}
+.plan-name{font-size:17px;font-weight:800;color:var(--ink)}
+.plan-price{font-size:26px;font-weight:800;color:var(--coral);margin:6px 0}
+.plan-price small{font-size:13px;font-weight:400;color:var(--ink2)}
+.plan-feat{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink);padding:5px 0}
+.plan-feat i{color:var(--teal);font-size:16px;flex-shrink:0;margin-top:1px}
+.plan-feat.off{color:var(--ink3)}.plan-feat.off i{color:var(--ink3)}
+
+/* segmented community feeds handled by JS show/hide */
+.post-h .ti-dots{min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
+.searchbar{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:20px;padding:9px 14px}
+.searchbar i{color:var(--ink2);font-size:17px}
+.searchbar input{flex:1;border:none;background:none;outline:none;font-size:14px;color:var(--ink)}
+.chips{display:flex;gap:7px;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;font-size:12px;font-weight:500;padding:5px 13px;border-radius:16px;background:var(--bg);color:var(--ink2);cursor:pointer;border:1px solid transparent}
+.chip.on{background:var(--coral-l);color:var(--coral);border-color:var(--coral)}
+.map-chip{position:absolute;left:10px;top:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);border-radius:16px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.1);z-index:3}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:34px 34px}
+.map-pin{transition:opacity .2s,transform .2s}
+.map-pin.hide{opacity:0;transform:translateX(-50%) scale(.4);pointer-events:none}
+/* diet scanner */
+.scan-frame{height:200px;border-radius:16px;background:#1A1A1A;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.scan-frame .corner{position:absolute;width:28px;height:28px;border:3px solid var(--amber)}
+.scan-c1{top:14px;left:14px;border-right:none;border-bottom:none;border-radius:8px 0 0 0}
+.scan-c2{top:14px;right:14px;border-left:none;border-bottom:none;border-radius:0 8px 0 0}
+.scan-c3{bottom:14px;left:14px;border-right:none;border-top:none;border-radius:0 0 0 8px}
+.scan-c4{bottom:14px;right:14px;border-left:none;border-top:none;border-radius:0 0 8px 0}
+.scan-line{position:absolute;left:14px;right:14px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:scanmove 1.6s ease-in-out infinite}
+@keyframes scanmove{0%{top:18px}50%{top:178px}100%{top:18px}}
+.scan-food{font-size:64px;opacity:.9}
+.diet-score-ring{width:96px;height:96px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
+.diet-score-ring::before{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--card)}
+.diet-score-inner{position:relative;text-align:center}
+.macro-bar{height:7px;border-radius:4px;background:var(--bg);overflow:hidden;margin-top:4px}
+.macro-f{height:100%;border-radius:4px}
+.food-opt{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.food-opt:active{background:var(--bg)}
+.food-emoji{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.feed{display:none}.feed.on{display:block}
+
+/* draggable language fab */
+.lang-fab{touch-action:none}
+.lang-fab.dragging{opacity:.9;transform:scale(1.08);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+
+</style>
+</head>
+<body>
+</content>
+</invoke>
+<div class="ph">
+<!-- ============ WeChat status + capsule ============ -->
+<div class="wx-bar" id="wxbar">
+  <span class="wx-time">9:41</span>
+  <div class="wx-sysr">
+    <div class="hdr-chat" onclick="goTo('s-msgs')" title="消息"><i class="ti ti-message-2"></i><span class="hdr-badge" id="hdr-unread">2</span></div>
+    <i class="ti ti-signal-4g"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-3"></i>
+    <div class="wx-cap" style="margin-left:6px">
+      <span class="dot">···</span><span class="wx-cap-div"></span>
+      <i class="ti ti-circle" style="cursor:default"></i>
+    </div>
+  </div>
+</div>
+
+<!-- per-page nav bars are now inline in each sub-screen -->
+
+<!-- ============ HOME ============ -->
+<div class="scr on" id="s-home">
+<div class="scroll" style="padding-bottom:10px">
+
+  <!-- hero with gradient -->
+  <div class="hero">
+    <div class="hero-pet">
+      <div class="avatar-img" onclick="goTo('s-profile')" style="cursor:pointer" id="home-av"></div>
+      <div style="flex:1">
+        <div class="pet-name" data-t="pet_name">巴迪 Buddy</div>
+        <div class="pet-sub" data-t="pet_breed">金毛寻回犬 · 3岁 · 公</div>
+        <div class="pet-tags">
+          <span class="htag" data-t="tag_collar">● 项圈在线</span>
+          <span class="htag" data-t="tag_bowl">● 智能碗已连</span>
+        </div>
+      </div>
+    </div>
+    <!-- points strip + check-in -->
+    <div class="pts-strip">
+      <div>
+        <div class="pts-big" id="pts-home">1,240</div>
+        <div class="pts-lbl" data-t="my_points">我的爱宠积分</div>
+      </div>
+      <button class="checkin" id="checkin-btn" onclick="doCheckin()">
+        <i class="ti ti-flame"></i><span data-t="checkin">签到 +20</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 九宫格 quick grid -->
+  <div class="sec" style="margin-top:-44px;position:relative;z-index:3">
+    <div class="grid9">
+      <div class="g9" onclick="goTo('s-training')"><div class="g9-ic" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-medal"></i></div><div class="g9-t" data-t="g_train">训练打卡</div><div class="g9-cap" data-t="g_train_c">每日 +50</div><span class="g9-badge">+50</span></div>
+      <div class="g9" onclick="openDiet()"><div class="g9-ic" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-bone"></i></div><div class="g9-t" data-t="g_diet">饮食扫描</div><div class="g9-cap" data-t="g_diet_c">扫一扫得分</div></div>
+      <div class="g9" onclick="goTo('s-vet')"><div class="g9-ic" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-stethoscope"></i></div><div class="g9-t" data-t="g_vet">在线问诊</div><div class="g9-cap" data-t="g_vet_c">医生在线</div></div>
+      <div class="g9" onclick="goTo('s-map')"><div class="g9-ic" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-map-pin"></i></div><div class="g9-t" data-t="g_map">附近服务</div><div class="g9-cap" data-t="g_map_c">5 家在营</div></div>
+      <div class="g9" onclick="goTo('s-collar')"><div class="g9-ic" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-device-watch"></i></div><div class="g9-t" data-t="g_collar">智能项圈</div><div class="g9-cap" data-t="g_collar_c">电量 78%</div></div>
+      <div class="g9" onclick="goTo('s-bowl')"><div class="g9-ic" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-bowl"></i></div><div class="g9-t" data-t="g_bowl">智能碗</div><div class="g9-cap" data-t="g_bowl_c">今日 240g</div></div>
+      <div class="g9" onclick="goTo('s-shop')"><div class="g9-ic" style="background:var(--amber-l);color:var(--amber-dk)"><i class="ti ti-gift"></i></div><div class="g9-t" data-t="g_redeem">积分兑换</div><div class="g9-cap" data-t="g_redeem_c">好礼热兑</div></div>
+      <div class="g9" onclick="goTo('s-shop')"><div class="g9-ic" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-shopping-bag"></i></div><div class="g9-t" data-t="g_mall">爱宠商城</div><div class="g9-cap" data-t="g_mall_c">618 大促</div></div>
+    </div>
+  </div>
+
+  <!-- promo carousel (illustrated) -->
+  <div class="hscroll" style="margin-top:4px">
+    <div class="banner-img" id="bn1" onclick="toast(A('more'))"><div class="banner-cap"><div class="t" data-t="promo1_t">连续签到 7 天</div><div class="s" data-t="promo1_s">领 200 积分 + 皇家狗粮券</div></div></div>
+    <div class="banner-img" id="bn2" onclick="goTo('s-shop')"><div class="banner-cap"><div class="t" data-t="promo2_t">邀请好友拼团</div><div class="s" data-t="promo2_s">S3 智能项圈 ¥299 起</div></div></div>
+    <div class="banner-img" id="bn3" onclick="goTo('s-shop')"><div class="banner-cap"><div class="t" data-t="promo3_t">618 宠物节</div><div class="s" data-t="promo3_s">全场最高减 ¥120</div></div></div>
+  </div>
+
+  <!-- AI mood card -->
+  <div class="ai-card">
+    <div class="ai-emoji">😌</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700;color:var(--teal-dk);display:flex;align-items:center;gap:5px"><i class="ti ti-sparkles"></i><span data-t="ai_title">AI 情绪识别</span></div>
+      <div style="font-size:12px;color:var(--ink);margin-top:3px" data-t="ai_body">项圈检测到巴迪现在很放松，是训练的好时机～</div>
+    </div>
+  </div>
+
+  <!-- wellness score -->
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="wellness">健康评分</span><span class="more" onclick="goTo('s-profile')" style="cursor:pointer"><span data-t="detail">详情</span> <i class="ti ti-chevron-right"></i></span></div>
+    <div class="score-wrap">
+      <div class="score-ring"><div class="score-inner"><div class="score-n">87</div><div class="score-l">/100 · <span data-t="excellent">优秀</span></div></div></div>
+      <div class="stat-mini">
+        <div class="smr"><span class="dot" style="background:#7F77DD"></span><span class="k" data-t="m_walk">今日运动</span><span class="v">6.2 km</span></div>
+        <div class="smr"><span class="dot" style="background:#378ADD"></span><span class="k" data-t="m_water">饮水量</span><span class="v">480 ml</span></div>
+        <div class="smr"><span class="dot" style="background:var(--teal)"></span><span class="k" data-t="m_hr">平均心率</span><span class="v">72 bpm</span></div>
+        <div class="smr"><span class="dot" style="background:var(--amber)"></span><span class="k" data-t="m_sleep">睡眠</span><span class="v">8.5 h</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- today's task / gamified -->
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="today_task">今日任务</span><span class="more"><span style="color:var(--coral);font-weight:600" data-t="task_progress">2/3 · 还差50积分</span></span></div>
+    <div class="prog" style="margin-bottom:12px"><div class="pf" style="width:66%"></div></div>
+    <div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm" data-t="task1">完成"坐下&等待"训练</div></div><span class="pill pt">+50</span></div>
+    <div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm" data-t="task2">记录今日饮水</div></div><span class="pill pt">+50</span></div>
+    <div class="row"><div class="ex-num">3</div><div class="tx"><div class="tm" data-t="task3">分享一条爱宠动态</div></div><button class="btn-g btn-sm" onclick="goTo('s-social')" data-t="go">去完成</button></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============ NOTIFICATIONS ============ -->
+<div class="scr" id="s-notif">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_notif">·</span></div>
+<div class="scroll">
+  <div class="notif-item unread" onclick="goTo('s-msgs')" style="padding-left:22px">
+    <div class="uav" style="background:#7F77DD;width:40px;height:40px">王</div>
+    <div style="flex:1"><div class="tm">小王</div><div class="ts" style="margin-top:2px" data-t="n1">你好！巴迪今天怎么样？🐕</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_5min">5 分钟前</div></div>
+    <span class="pill pt" data-t="msg">私信</span>
+  </div>
+  <div class="notif-item unread" style="padding-left:22px">
+    <div class="ico" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-heart"></i></div>
+    <div style="flex:1"><div class="tm" data-t="n2_t">章玉 赞了你的动态</div><div class="ts" style="margin-top:2px" data-t="n2_s">"巴迪和训练打卡"</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_12min">12 分钟前</div></div>
+  </div>
+  <div class="notif-item unread" style="padding-left:22px">
+    <div class="ico" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-user-plus"></i></div>
+    <div style="flex:1"><div class="tm" data-t="n3_t">李梅 关注了你</div><div class="ts" style="margin-top:2px" data-t="n3_s">德国牧羊犬 · 上海</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_1h">1 小时前</div></div>
+    <button class="btn-g btn-sm" data-t="follow">关注</button>
+  </div>
+  <div class="notif-item" style="padding-left:22px">
+    <div class="ico" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-calendar"></i></div>
+    <div style="flex:1"><div class="tm" data-t="n4_t">预约已确认</div><div class="ts" style="margin-top:2px" data-t="n4_s">王丽医生 · 6月15日 10:30</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_2h">2 小时前</div></div>
+  </div>
+  <div class="notif-item" style="padding-left:22px">
+    <div class="ico" style="background:var(--amber-l);color:var(--amber-dk)"><i class="ti ti-star"></i></div>
+    <div style="flex:1"><div class="tm" data-t="n5_t">积分到账</div><div class="ts" style="margin-top:2px" data-t="n5_s">完成训练 +50 积分</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_3h">3 小时前</div></div>
+    <span class="pill pa">+50</span>
+  </div>
+  <div class="notif-item" style="padding-left:22px">
+    <div class="ico" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-alert-triangle"></i></div>
+    <div style="flex:1"><div class="tm" data-t="n6_t">精油即将用尽</div><div class="ts" style="margin-top:2px" data-t="n6_s">香茅精油 — 去商城补货</div><div style="font-size:11px;color:var(--ink3);margin-top:3px" data-t="t_5h">5 小时前</div></div>
+    <span class="pill pc">!</span>
+  </div>
+</div>
+</div>
+
+<!-- ============ MESSAGE LIST ============ -->
+<div class="scr" id="s-msgs">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_msgs">·</span></div>
+<div class="scroll">
+  <div class="row" style="padding:13px 16px;cursor:pointer;background:var(--card);margin-bottom:8px" onclick="goTo('s-chat')">
+    <div class="uav" style="background:#7F77DD;width:44px;height:44px">王</div>
+    <div style="flex:1"><div class="tm">小王</div><div class="ts" data-t="n1b">你好！巴迪今天怎么样？</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--ink3)" data-t="t_5min2">5分钟</div><div style="width:18px;height:18px;border-radius:50%;background:var(--coral);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;margin:4px 0 0 auto">1</div></div>
+  </div>
+  <div class="row" style="padding:13px 16px;cursor:pointer;background:var(--card);margin-bottom:8px">
+    <div class="uav" style="background:var(--amber);width:44px;height:44px">章</div>
+    <div style="flex:1"><div class="tm">章玉</div><div class="ts" data-t="msg2">训练建议太棒了！</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--ink3)">1h</div></div>
+  </div>
+  <div class="row" style="padding:13px 16px;cursor:pointer;background:var(--card)">
+    <div class="uav" style="background:var(--teal);width:44px;height:44px">李</div>
+    <div style="flex:1"><div class="tm">李梅</div><div class="ts" data-t="msg3">周六狗公园见？</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--ink3)">2h</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ============ CHAT ============ -->
+<div class="scr" id="s-chat">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t">小王</span></div>
+<div class="scroll" id="chat-scroll" style="background:var(--bg)">
+  <div class="msg-wrap">
+    <div class="msg-row"><div class="msg-av" style="background:#7F77DD">王</div><div class="msg-bubble" data-t="c1">你好 Marco！巴迪今天怎么样？🐕</div></div>
+    <div class="msg-row me"><div class="msg-av" style="background:var(--teal)">我</div><div class="msg-bubble mine" data-t="c2">很好！今早把训练全部完成了</div></div>
+    <div class="msg-row"><div class="msg-av" style="background:#7F77DD">王</div><div class="msg-bubble" data-t="c3">太好了！Mochi 昨晚没睡好，项圈只记录到4小时睡眠</div></div>
+    <div class="msg-row me"><div class="msg-av" style="background:var(--teal)">我</div><div class="msg-bubble mine" data-t="c4">试试减少下午的活动量？医生之前是这么建议的</div></div>
+    <div id="chat-new"></div>
+  </div>
+</div>
+<div class="compose-bar">
+  <input type="text" id="chat-input" placeholder="发消息..." data-tp="chat_ph">
+  <button class="c-send" onclick="sendMsg()"><i class="ti ti-arrow-up"></i></button>
+</div>
+</div>
+
+<!-- ============ PROFILE ============ -->
+<div class="scr" id="s-profile">
+<div class="scroll">
+  <div class="hero" style="padding-bottom:40px">
+    <div style="text-align:center;padding:8px 16px 0">
+      <div class="avatar-img" style="width:80px;height:80px;border-radius:22px;margin:0 auto 8px" id="prof-av"></div>
+      <div style="font-size:19px;font-weight:700;color:#fff">巴迪 Buddy</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:2px" data-t="prof_sub">金毛寻回犬 · 公 · 3岁</div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><span class="htag" data-t="neutered">已绝育</span><span class="htag" data-t="pro_plan">Pro 会员</span></div>
+    </div>
+  </div>
+  <div class="sec" style="margin-top:-28px;position:relative;z-index:2">
+    <div class="stat4">
+      <div class="sbox c"><div class="sv">87</div><div class="sl" data-t="health">健康</div></div>
+      <div class="sbox c"><div class="sv">1,240</div><div class="sl" data-t="points">积分</div></div>
+      <div class="sbox c"><div class="sv">#2</div><div class="sl" data-t="rank">排名</div></div>
+      <div class="sbox c"><div class="sv">7</div><div class="sl" data-t="streak_d">连签</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="hw_connected">已连接设备</span></div>
+    <div class="hw-card" onclick="goTo('s-collar')">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="ico" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-device-watch"></i></div>
+        <div style="flex:1"><div class="tm" data-t="collar_s2">智能项圈 S2</div><div class="ts" data-t="collar_st">GPS 在线 · 香薰扩散开启</div></div>
+        <span class="pill pt" data-t="online">在线</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink2);margin-bottom:2px" data-t="bat78">电量 78%</div>
+      <div class="bat-bar"><div class="bat-f" style="width:78%"></div></div>
+    </div>
+    <div class="hw-card" onclick="goTo('s-bowl')">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="ico" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-bowl"></i></div>
+        <div style="flex:1"><div class="tm" data-t="bowl_b1">智能碗 B1</div><div class="ts" data-t="bowl_st">称重在线 · WiFi</div></div>
+        <span class="pill pt" data-t="online2">在线</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink2);margin-bottom:2px" data-t="bat91">电量 91%</div>
+      <div class="bat-bar"><div class="bat-f" style="width:91%"></div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="health_rec">健康档案</span></div>
+    <div class="row"><div class="ico" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-vaccine"></i></div><div class="tx"><div class="tm" data-t="vacc">疫苗接种</div><div class="ts" data-t="vacc_d">最近：2024年3月</div></div><span class="pill pt" data-t="ok">正常</span></div>
+    <div class="row"><div class="ico" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-pill"></i></div><div class="tx"><div class="tm" data-t="antiparas">驱虫</div><div class="ts" data-t="antiparas_d">项圈 · 香茅精油</div></div><span class="pill pt" data-t="active">生效中</span></div>
+    <div class="row"><div class="ico" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-file-text"></i></div><div class="tx"><div class="tm" data-t="records">就诊记录</div><div class="ts" data-t="records_d">已记录 3 次</div></div><i class="ti ti-chevron-right chev"></i></div>
+  </div>
+</div>
+</div>
+
+<!-- ============ COLLAR DETAIL ============ -->
+<div class="scr" id="s-collar">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_collar">·</span></div>
+<div class="scroll">
+  <div class="sec" style="text-align:center;padding:20px">
+    <div class="media" style="width:120px;height:120px;border-radius:24px;margin:0 auto 10px" id="collar-media"></div>
+    <div style="font-size:16px;font-weight:700;color:var(--ink)" data-t="collar_full">PetHarmony 智能项圈 S2</div>
+    <span class="pill pt" style="margin-top:8px" data-t="connected">已连接</span>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="battery">电池状态</span></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="font-size:30px;font-weight:800;color:var(--teal)">78%</div><div style="font-size:12px;color:var(--ink2)" data-t="autonomy_c">预计续航<br>剩余约 18 小时</div></div>
+    <div class="bat-bar" style="height:10px"><div class="bat-f" style="width:78%"></div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="sensors_active">活跃传感器</span></div>
+    <div class="row"><div class="ico" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-map-pin"></i></div><div class="tx"><div class="tm">GPS</div><div class="ts" data-t="gps_d">精度 3m · 每30秒更新</div></div><span class="pill pt">ON</span></div>
+    <div class="row"><div class="ico" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-heart-rate-monitor"></i></div><div class="tx"><div class="tm" data-t="heart">心率</div><div class="ts" data-t="heart_d">最新读数：72 bpm</div></div><span class="pill pt">ON</span></div>
+    <div class="row"><div class="ico" style="background:var(--amber-l);color:var(--amber-dk)"><i class="ti ti-temperature"></i></div><div class="tx"><div class="tm" data-t="temp">体温</div><div class="ts">38.4°C · <span data-t="normal">正常</span></div></div><span class="pill pt">ON</span></div>
+    <div class="row"><div class="ico" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-activity"></i></div><div class="tx"><div class="tm" data-t="accel">加速度计</div><div class="ts" data-t="accel_d">步数、睡眠、活动</div></div><span class="pill pt">ON</span></div>
+    <div class="row"><div class="ico" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-microphone"></i></div><div class="tx"><div class="tm" data-t="bark">吠叫分析 · 情绪AI</div><div class="ts" data-t="bark_d">灵敏度：中</div></div><span class="pill pt">ON</span></div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="diffuser">香薰扩散器</span></div>
+    <div class="row"><div class="ico" style="background:var(--teal-l);color:var(--teal-d)"><i class="ti ti-droplet"></i></div><div class="tx"><div class="tm" data-t="oil_active">当前精油：香茅</div><div class="ts" data-t="oil_d">余量 35% · 建议补货</div></div><span class="pill pc" data-t="low">不足</span></div>
+    <div class="row"><div class="ico" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-adjustments"></i></div><div class="tx"><div class="tm" data-t="intensity">扩散强度</div><div class="ts" data-t="intensity_d">中 · 每小时4次</div></div><i class="ti ti-chevron-right chev"></i></div>
+  </div>
+</div>
+</div>
+
+<!-- ============ BOWL DETAIL ============ -->
+<div class="scr" id="s-bowl">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_bowl">·</span></div>
+<div class="scroll">
+  <div class="sec" style="text-align:center;padding:20px">
+    <div class="media" style="width:120px;height:120px;border-radius:24px;margin:0 auto 10px" id="bowl-media"></div>
+    <div style="font-size:16px;font-weight:700;color:var(--ink)" data-t="bowl_full">PetHarmony 智能碗 B1</div>
+    <span class="pill pt" style="margin-top:8px" data-t="connected2">已连接</span>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="today_data">今日数据</span></div>
+    <div class="stat2">
+      <div class="sbox"><div class="si" style="color:#378ADD"><i class="ti ti-droplet"></i></div><div class="sv">480</div><div class="sl" data-t="ml_water">ml 饮水</div></div>
+      <div class="sbox"><div class="si" style="color:var(--teal)"><i class="ti ti-salad"></i></div><div class="sv">240</div><div class="sl" data-t="g_food">g 进食</div></div>
+      <div class="sbox"><div class="si" style="color:#7F77DD"><i class="ti ti-clock"></i></div><div class="sv">3</div><div class="sl" data-t="meals">餐次</div></div>
+      <div class="sbox"><div class="si" style="color:var(--amber-dk)"><i class="ti ti-trending-up"></i></div><div class="sv">4.2</div><div class="sl" data-t="min_meal">分钟/餐</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="device_info">设备信息</span></div>
+    <div class="row"><div class="tx"><div class="tm" data-t="material">碗体材质</div></div><div style="font-size:12px;color:var(--ink2)">304 不锈钢</div></div>
+    <div class="row"><div class="tx"><div class="tm" data-t="conn">连接方式</div></div><div style="font-size:12px;color:var(--ink2)">WiFi 2.4GHz</div></div>
+    <div class="row"><div class="tx"><div class="tm" data-t="firmware">固件</div></div><div style="font-size:12px;color:var(--ink2)">v1.2.0 · <span data-t="updated">已更新</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ============ VET ============ -->
+<div class="scr" id="s-vet">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_vet">·</span></div>
+<div style="padding:10px 12px;background:var(--card);border-bottom:.5px solid var(--line)">
+  <div class="searchbar"><i class="ti ti-search"></i><input type="text" id="vet-search" oninput="filterVets()" placeholder="搜索医生、科室或医院..." data-tp="vet_search_ph"></div>
+  <div class="chips" style="margin-top:8px">
+    <span class="chip on" data-vf="all" onclick="vetChip(this,'all')" data-t="vf_all">全部</span>
+    <span class="chip" data-vf="tele" onclick="vetChip(this,'tele')" data-t="vf_tele">远程问诊</span>
+    <span class="chip" data-vf="ortho" onclick="vetChip(this,'ortho')" data-t="vf_ortho">骨科</span>
+    <span class="chip" data-vf="emerg" onclick="vetChip(this,'emerg')" data-t="vf_emerg">急诊</span>
+    <span class="chip" data-vf="near" onclick="vetChip(this,'near')" data-t="vf_near">距离近</span>
+  </div>
+</div>
+<div class="scroll">
+  <div class="sec" style="background:var(--teal-l)">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="ti ti-calendar-check" style="color:var(--teal-dk);font-size:16px"></i><div style="font-size:12px;font-weight:700;color:var(--teal-dk)" data-t="next_appt">下次预约</div></div>
+    <div style="font-size:17px;font-weight:700;color:var(--teal-dk)">6月15日 · 10:30</div>
+    <div style="font-size:12px;color:var(--teal-d);margin-top:2px" data-t="vet_who">王丽医生 · PawCare 上海</div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-o" style="padding:9px;color:var(--teal-dk);border-color:var(--teal)" data-t="cancel">取消</button>
+      <button class="btn-teal" style="padding:9px" data-t="share_data">共享健康数据</button>
+    </div>
+  </div>
+  <div class="sec" id="vet-list-sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="rec_vets">推荐兽医</span><span class="more" id="vet-count"></span></div>
+    <div id="vet-list"></div>
+    <div id="vet-empty" style="display:none;text-align:center;padding:24px;color:var(--ink2);font-size:13px"><i class="ti ti-mood-empty" style="font-size:32px;opacity:.4;display:block;margin-bottom:8px"></i><span data-t="no_result">没有找到匹配的结果</span></div>
+  </div>
+  <div class="sec">
+    <div class="row">
+      <div class="ico" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-video"></i></div>
+      <div class="tx"><div class="tm" data-t="ondemand">在线视频问诊</div><div class="ts" data-t="ondemand_d">医生现在在线 · ¥49</div></div>
+      <button class="btn-g btn-sm" data-t="start">发起</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ TRAINING ============ -->
+<div class="scr" id="s-training">
+<div class="tab-row">
+  <button class="tab on" id="tr-tab-session" onclick="switchTrainingTab('session')" data-t="tab_session">训练</button>
+  <button class="tab" id="tr-tab-diet" onclick="switchTrainingTab('diet')" data-t="tab_diet">饮食</button>
+  <button class="tab" id="tr-tab-academy" onclick="switchTrainingTab('academy')" data-t="tab_academy">专家课堂</button>
+  <button class="tab" id="tr-tab-ranking" onclick="switchTrainingTab('ranking')" data-t="tab_ranking">排行榜</button>
+</div>
+<div class="scroll" id="training-content"></div>
+</div>
+
+<!-- ============ DIET SCAN (Bitepal-style) ============ -->
+<div class="scr" id="s-diet">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_diet">饮食扫描</span><span class="more" style="margin-left:auto;cursor:pointer" onclick="goTo('s-diet-log')"><span data-t="diet_history">记录</span></span></div>
+<div class="scroll" id="diet-content"></div>
+</div>
+
+<!-- diet history -->
+<div class="scr" id="s-diet-log">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_diet_log">饮食记录</span></div>
+<div class="scroll" id="diet-log-content" style="padding:10px 10px 20px"></div>
+</div>
+
+<!-- ============ SHOP ============ -->
+<div class="scr" id="s-shop">
+<div class="nav">
+  <span class="nav-t" data-t="nav_shop2">积分商城</span>
+  <div style="margin-left:auto;position:relative;cursor:pointer" onclick="goTo('s-cart')"><i class="ti ti-shopping-cart" style="font-size:22px;color:var(--ink)"></i><span class="cart-badge" id="cart-badge-top" style="display:none">0</span></div>
+</div>
+<div class="tab-row">
+  <button class="tab on" id="sh-tab-coupon" onclick="switchShopTab('coupon')" data-t="tab_coupon">积分兑换</button>
+  <button class="tab" id="sh-tab-prodotti" onclick="switchShopTab('prodotti')" data-t="tab_products">商品</button>
+  <button class="tab" id="sh-tab-premium" onclick="switchShopTab('premium')" data-t="tab_premium">会员</button>
+</div>
+<div class="scroll" id="shop-content">
+  <div id="shop-coupon" style="display:block">
+    <div class="redpack" style="margin:10px 10px 4px" onclick="switchShopTab('coupon')">
+      <div class="rp-coin"><i class="ti ti-coin"></i></div>
+      <div style="flex:1"><div style="font-size:16px;font-weight:800;color:#fff"><span id="pts-shop">1,240</span> <span style="font-size:12px;font-weight:500" data-t="pts_avail">积分可用</span></div><div style="font-size:11px;color:rgba(255,255,255,.9);margin-top:2px" data-t="pts_earn">每完成一次训练 +50 积分</div></div>
+      <i class="ti ti-gift bg"></i>
+    </div>
+    <div style="padding:8px 14px 16px">
+      <div class="cpn"><div class="cpn-l"><div class="cpn-v">15%</div><div class="cpn-u" data-t="off">折扣</div></div><div class="cpn-r"><div class="cpn-n">皇家 Royal Canin 金毛</div><div class="cpn-d" data-t="cpn1_d">狗粮 · 满¥99可用</div><div class="cpn-foot"><span class="cpn-p">500 积分</span><button class="cpn-btn" onclick="redeem(this,500)" data-t="redeem">兑换</button></div></div></div>
+      <div class="cpn"><div class="cpn-l"><div class="cpn-v">¥30</div><div class="cpn-u" data-t="voucher">券</div></div><div class="cpn-r"><div class="cpn-n" data-t="cpn2_n">PetStyle 美容</div><div class="cpn-d" data-t="cpn2_d">首次预约 · 30天有效</div><div class="cpn-foot"><span class="cpn-p">800 积分</span><button class="cpn-btn" onclick="redeem(this,800)" data-t="redeem2">兑换</button></div></div></div>
+      <div class="cpn"><div class="cpn-l"><div class="cpn-v">20%</div><div class="cpn-u" data-t="off2">折扣</div></div><div class="cpn-r"><div class="cpn-n" data-t="cpn3_n">平安宠物保险</div><div class="cpn-d" data-t="cpn3_d">首年专享</div><div class="cpn-foot"><span class="cpn-p">1,000 积分</span><button class="cpn-btn" onclick="redeem(this,1000)" data-t="redeem3">兑换</button></div></div></div>
+      <div class="cpn"><div class="cpn-l" style="background:linear-gradient(120deg,#2BAA9B,#1B8478)"><div class="cpn-v" style="font-size:14px" data-t="oilkit">精油</div><div class="cpn-u" data-t="free">免费</div></div><div class="cpn-r"><div class="cpn-n" data-t="cpn4_n">精油入门套装</div><div class="cpn-d" data-t="cpn4_d">香茅 + 薰衣草 10ml</div><div class="cpn-foot"><span class="cpn-p">600 积分</span><button class="cpn-btn" onclick="redeem(this,600)" data-t="redeem4">兑换</button></div></div></div>
+      <div class="cpn"><div class="cpn-l"><div class="cpn-v">¥50</div><div class="cpn-u" data-t="voucher2">券</div></div><div class="cpn-r"><div class="cpn-n" data-t="cpn5_n">在线兽医问诊</div><div class="cpn-d" data-t="cpn5_d">视频问诊 · 60天有效</div><div class="cpn-foot"><span class="cpn-p">400 积分</span><button class="cpn-btn" onclick="redeem(this,400)" data-t="redeem5">兑换</button></div></div></div>
+    </div>
+  </div>
+  <div id="shop-prodotti" style="display:none;padding:12px 14px"></div>
+  <div id="shop-premium" style="display:none;padding:12px 14px"></div>
+</div>
+</div>
+
+<!-- ============ PRODUCT DETAIL ============ -->
+<div class="scr" id="s-product">
+<div class="nav">
+  <button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button>
+  <span class="nav-t" data-t="nav_product">商品详情</span>
+  <div style="margin-left:auto;position:relative;cursor:pointer" onclick="goTo('s-cart')"><i class="ti ti-shopping-cart" style="font-size:22px;color:var(--ink)"></i><span class="cart-badge" id="cart-badge-pd" style="display:none">0</span></div>
+</div>
+<div class="scroll" id="product-detail" style="padding-bottom:62px"></div>
+<div class="buybar" id="product-buybar"></div>
+</div>
+
+<!-- ============ PLAN DETAIL ============ -->
+<div class="scr" id="s-plan">
+<div class="nav">
+  <button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button>
+  <span class="nav-t" data-t="nav_plan">会员详情</span>
+</div>
+<div class="scroll" id="plan-detail"></div>
+</div>
+
+<!-- ============ CART ============ -->
+<div class="scr" id="s-cart">
+<div class="nav">
+  <button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button>
+  <span class="nav-t" data-t="nav_cart">购物车</span>
+</div>
+<div class="scroll" id="cart-list" style="padding:12px 10px 70px"></div>
+<div class="cart-foot" id="cart-foot" style="display:none">
+  <div><div style="font-size:11px;color:var(--ink2)" data-t="cart_total">合计</div><div style="font-size:18px;font-weight:800;color:var(--coral)" id="cart-total">¥0</div></div>
+  <button class="btn-g" style="width:auto;padding:11px 28px" onclick="checkout()" data-t="checkout">结算</button>
+</div>
+</div>
+
+<!-- ============ SOCIAL ============ -->
+<div class="scr" id="s-social">
+<div class="tab-row">
+  <button class="tab on" id="so-tab-amici" onclick="switchSocialTab('amici')" data-t="tab_friends">关注</button>
+  <button class="tab" id="so-tab-trending" onclick="switchSocialTab('trending')" data-t="tab_trending">热门</button>
+  <button class="tab" id="so-tab-suggeriti" onclick="switchSocialTab('suggeriti')" data-t="tab_suggested">推荐</button>
+</div>
+<div class="scroll" id="social-scroll" style="padding-top:8px">
+<div class="feed on" id="feed-amici">
+  <div class="post-c" style="margin-top:0">
+    <div class="post-h"><div class="uav" style="background:var(--teal)">我</div><div style="flex:1"><div class="pn">Marco Liu</div><div class="pt2">2分钟 · 上海</div></div><i class="ti ti-dots" style="color:var(--ink3);font-size:16px"></i></div>
+    <div class="p-txt" data-t="post1">巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？💪</div>
+    <div class="p-img media" style="height:150px" id="post-img-1"></div>
+    <div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pt" data-t="t_golden">金毛</span><span class="pill pp" data-t="t_training">训练</span></div>
+    <div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>24</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>8</span></button><button class="pact"><i class="ti ti-share-3"></i><span data-t="share">分享</span></button></div>
+  </div>
+  <div class="post-c">
+    <div class="post-h"><div class="uav" style="background:#7F77DD">王</div><div style="flex:1"><div class="pn">小王</div><div class="pt2">1小时 · 北京</div></div><i class="ti ti-dots" style="color:var(--ink3);font-size:16px"></i></div>
+    <div class="p-txt" data-t="post2">项圈检测到 Mochi 只睡了4小时。医生建议减少下午的活动量。</div>
+    <div class="p-img media" style="height:150px" id="post-img-2"></div>
+    <div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pb" data-t="t_health">健康</span><span class="pill pa" data-t="t_sleep">睡眠</span></div>
+    <div class="p-acts"><button class="pact liked" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>41</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>15</span></button><button class="pact"><i class="ti ti-share-3"></i><span data-t="share2">分享</span></button></div>
+  </div>
+  <div class="post-c">
+    <div class="post-h"><div class="uav" style="background:var(--amber)">章</div><div style="flex:1"><div class="pn">章玉</div><div class="pt2">3小时 · 深圳</div></div><i class="ti ti-dots" style="color:var(--ink3);font-size:16px"></i></div>
+    <div class="p-txt" data-t="post3">用500训练积分兑换了皇家狗粮券，积分系统太有动力了！🎁</div>
+    <div class="p-img media" style="height:150px" id="post-img-3"></div>
+    <div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pc" data-t="t_shop">商城</span><span class="pill pg" data-t="t_save">省钱</span></div>
+    <div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>18</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>5</span></button><button class="pact"><i class="ti ti-share-3"></i><span data-t="share3">分享</span></button></div>
+  </div>
+  <div id="social-new"></div>
+</div>
+<div class="feed" id="feed-trending"></div>
+<div class="feed" id="feed-suggeriti"></div>
+</div>
+<div class="compose-bar">
+  <div class="uav" style="background:var(--teal);width:30px;height:30px;font-size:11px">我</div>
+  <input type="text" id="post-input" placeholder="分享一条爱宠动态..." data-tp="post_ph">
+  <button class="c-send" onclick="addPost()"><i class="ti ti-arrow-up"></i></button>
+</div>
+</div>
+
+<!-- ============ MAP ============ -->
+<div class="scr" id="s-map">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_map">·</span></div>
+<div class="tab-row">
+  <button class="tab on" id="map-tab-all" onclick="filterMap('all')" data-t="m_all">全部</button>
+  <button class="tab" id="map-tab-vet" onclick="filterMap('vet')" data-t="m_vet">兽医</button>
+  <button class="tab" id="map-tab-park" onclick="filterMap('park')" data-t="m_park">狗公园</button>
+  <button class="tab" id="map-tab-grm" onclick="filterMap('grm')" data-t="m_grm">美容</button>
+  <button class="tab" id="map-tab-shop" onclick="filterMap('shop')" data-t="m_shop">商店</button>
+</div>
+<div class="scroll">
+  <div style="padding:10px 14px">
+    <div class="map-area" id="map-area">
+      <div class="map-grid"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;opacity:.22"><i class="ti ti-map-2" style="font-size:46px;color:var(--ink2)"></i><div style="font-size:11px;color:var(--ink2)">上海 · 静安区</div></div>
+      <div class="map-chip" id="map-chip"></div>
+      <div class="map-pin" data-pin="vet" style="left:30%;top:25%" onclick="showPlace('vet1')"><div class="map-pin-ico" style="background:#0C447C"><i class="ti ti-stethoscope" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="vet" style="left:60%;top:38%" onclick="showPlace('vet2')"><div class="map-pin-ico" style="background:#0C447C"><i class="ti ti-stethoscope" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="you" style="left:45%;top:54%"><div class="map-pin-ico" style="background:var(--coral)"><i class="ti ti-dog" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="park" style="left:20%;top:60%" onclick="showPlace('park1')"><div class="map-pin-ico" style="background:#27500A"><i class="ti ti-trees" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="park" style="left:75%;top:62%" onclick="showPlace('park2')"><div class="map-pin-ico" style="background:#27500A"><i class="ti ti-trees" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="grm" style="left:55%;top:20%" onclick="showPlace('grm1')"><div class="map-pin-ico" style="background:var(--amber-dk)"><i class="ti ti-scissors" style="color:#fff"></i></div></div>
+      <div class="map-pin" data-pin="shop" style="left:16%;top:36%" onclick="showPlace('shop1')"><div class="map-pin-ico" style="background:var(--coral)"><i class="ti ti-shopping-bag" style="color:#fff"></i></div></div>
+    </div>
+    <div class="map-info" id="place-info" style="display:none"></div>
+    <div class="sec-h" style="margin:4px 0 8px"><span class="sec-bar"></span><span data-t="nearby_list">附近</span></div>
+    <div id="map-list">
+      <div class="row" style="background:var(--card);padding:11px;border-radius:12px;margin-bottom:6px" data-cat="vet" onclick="showPlace('vet1')"><div class="ico" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-stethoscope"></i></div><div class="tx"><div class="tm">PawCare 上海</div><div class="ts" data-t="ml_vet1">兽医 · 0.8 km · ★4.9</div></div><span class="pill pb" data-t="open">营业中</span></div>
+      <div class="row" style="background:var(--card);padding:11px;border-radius:12px;margin-bottom:6px" data-cat="park" onclick="showPlace('park1')"><div class="ico" style="background:#EAF3DE;color:#27500A"><i class="ti ti-trees"></i></div><div class="tx"><div class="tm" data-t="ml_park1">中山公园狗活动区</div><div class="ts" data-t="ml_park1d">狗公园 · 0.4 km</div></div><span class="pill pg" data-t="free2">免费</span></div>
+      <div class="row" style="background:var(--card);padding:11px;border-radius:12px;margin-bottom:6px" data-cat="grm" onclick="showPlace('grm1')"><div class="ico" style="background:var(--amber-l);color:var(--amber-dk)"><i class="ti ti-scissors"></i></div><div class="tx"><div class="tm">PetStyle 宠物美容</div><div class="ts" data-t="ml_grm1">美容 · 1.2 km · ★4.8</div></div><span class="pill pa" data-t="reserve">可预约</span></div>
+      <div class="row" style="background:var(--card);padding:11px;border-radius:12px;margin-bottom:6px" data-cat="shop" onclick="showPlace('shop1')"><div class="ico" style="background:var(--coral-l);color:var(--coral)"><i class="ti ti-shopping-bag"></i></div><div class="tx"><div class="tm">PetWorld 宠物店</div><div class="ts" data-t="ml_shop1">宠物店 · 0.6 km · ★4.6</div></div><span class="pill pt" data-t="open2">营业中</span></div>
+      <div class="row" style="background:var(--card);padding:11px;border-radius:12px;margin-bottom:6px" data-cat="vet" onclick="showPlace('vet2')"><div class="ico" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-stethoscope"></i></div><div class="tx"><div class="tm">PetMed 中心</div><div class="ts" data-t="ml_vet2">兽医 · 2.1 km · ★4.7</div></div><span class="pill pb" data-t="open3">营业中</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ LANGUAGE ============ -->
+<div class="scr" id="s-lang">
+<div class="nav"><button class="back" onclick="goBack()"><i class="ti ti-chevron-left"></i></button><span class="nav-t" data-t="nav_lang">·</span></div>
+<div class="scroll">
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span data-t="select_lang">选择语言 / Select language</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <button class="lang-btn on" id="lang-zh" onclick="setLang('zh')"><span>中文（简体）</span><i class="ti ti-circle-check-filled ck"></i></button>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')"><span>English</span><i class="ti ti-circle-check-filled ck"></i></button>
+      <button class="lang-btn" id="lang-it" onclick="setLang('it')"><span>Italiano</span><i class="ti ti-circle-check-filled ck"></i></button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="sec-bar"></span><span id="lang-preview-lbl">预览 / Preview</span></div>
+    <div style="display:flex;gap:8px">
+      <div class="sbox" style="flex:1;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--ink)" id="lang-s-home">首页</div></div>
+      <div class="sbox" style="flex:1;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--ink)" id="lang-s-train">训练</div></div>
+      <div class="sbox" style="flex:1;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--ink)" id="lang-s-shop">商城</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--ink2);margin-top:10px;line-height:1.5" data-t="lang_note">小程序顶部支持一键切换语言，类似支付宝的多语言模式。</div>
+  </div>
+</div>
+</div>
+
+<!-- ============ TAB BAR ============ -->
+<div class="tabbar" id="tabbar">
+  <button class="tb on" id="tb-home" onclick="goTo('s-home')"><i class="ti ti-home-2"></i><span data-t="nav_home">首页</span></button>
+  <button class="tb" id="tb-profile" onclick="goTo('s-profile')"><i class="ti ti-paw"></i><span data-t="nav_pet">爱宠</span></button>
+  <button class="tb" id="tb-training" onclick="goTo('s-training')"><i class="ti ti-medal"></i><span data-t="nav_train">训练</span></button>
+  <button class="tb" id="tb-shop" onclick="goTo('s-shop')"><i class="ti ti-shopping-bag"></i><span data-t="nav_shop">商城</span></button>
+  <button class="tb tb-c" id="tb-social" onclick="goTo('s-social')"><i class="ti ti-users"></i><span data-t="nav_community">社区</span></button>
+</div>
+
+<!-- floating language switch — reachable from every screen -->
+<div class="lang-fab" id="langfab"><i class="ti ti-language"></i><span id="fab-lbl">文/A</span></div>
+
+<!-- language bottom sheet -->
+<div class="sheet-mask" id="sheet" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-h" id="sheet-title">选择语言 · Language · Lingua</div>
+    <div class="sheet-opt on" id="opt-zh" onclick="setLang('zh');closeSheet()"><span>中文（简体）</span><i class="ti ti-circle-check-filled ck"></i></div>
+    <div class="sheet-opt" id="opt-en" onclick="setLang('en');closeSheet()"><span>English</span><i class="ti ti-circle-check-filled ck"></i></div>
+    <div class="sheet-opt" id="opt-it" onclick="setLang('it');closeSheet()"><span>Italiano</span><i class="ti ti-circle-check-filled ck"></i></div>
+    <div class="sheet-cancel" id="sheet-cancel" onclick="closeSheet()">取消</div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+
+// ===== inline SVG illustration library (no external images needed) =====
+const SVG={
+ dog:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BAA9B"/><stop offset=".55" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="100" height="100" fill="url(#dg)"/><g fill="#fff"><path d="M50 30c-11 0-20 9-20 22 0 9 6 16 14 19l-3 8h18l-3-8c8-3 14-10 14-19 0-13-9-22-20-22z"/><ellipse cx="40" cy="44" rx="4.5" ry="6" fill="#3a2a1a"/><ellipse cx="60" cy="44" rx="4.5" ry="6" fill="#3a2a1a"/><path d="M44 58c2 3 10 3 12 0" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="53" rx="4" ry="3" fill="#3a2a1a"/><path d="M30 28c-6-4-12-2-13 4s4 11 10 9z"/><path d="M70 28c6-4 12-2 13 4s-4 11-10 9z"/></g></svg>`,
+ expert1:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#E4F5F2"/><circle cx="50" cy="40" r="18" fill="#2BAA9B"/><path d="M50 62c-16 0-28 10-28 24v14h56V86c0-14-12-24-28-24z" fill="#1B8478"/><circle cx="50" cy="40" r="13" fill="#fff" opacity=".25"/></svg>`,
+ expert2:`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#FCEAE0"/><circle cx="50" cy="40" r="18" fill="#E8743B"/><path d="M50 62c-16 0-28 10-28 24v14h56V86c0-14-12-24-28-24z" fill="#9E3F12"/><circle cx="50" cy="40" r="13" fill="#fff" opacity=".25"/></svg>`,
+ collarP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E4F5F2"/><stop offset="1" stop-color="#FDF3DC"/></linearGradient></defs><rect width="200" height="200" fill="url(#cg)"/><ellipse cx="100" cy="105" rx="62" ry="58" fill="none" stroke="#2BAA9B" stroke-width="14"/><rect x="78" y="150" width="44" height="30" rx="8" fill="#E8743B"/><circle cx="100" cy="165" r="7" fill="#fff"/><rect x="86" y="44" width="28" height="20" rx="5" fill="#1B8478"/></svg>`,
+ bowlP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6F1FB"/><stop offset="1" stop-color="#E4F5F2"/></linearGradient></defs><rect width="200" height="200" fill="url(#bg2)"/><path d="M50 95h100l-10 50a14 14 0 0 1-14 12H74a14 14 0 0 1-14-12z" fill="#378ADD"/><ellipse cx="100" cy="95" rx="50" ry="16" fill="#5BA0E8"/><ellipse cx="100" cy="92" rx="38" ry="11" fill="#cfe4fb"/><circle cx="150" cy="70" r="9" fill="#2BAA9B"/></svg>`,
+ oilP:`<svg viewBox="0 0 200 200"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDF3DC"/><stop offset="1" stop-color="#EAF3DE"/></linearGradient></defs><rect width="200" height="200" fill="url(#og)"/><g><rect x="70" y="70" width="26" height="70" rx="8" fill="#27500A" opacity=".8"/><rect x="104" y="60" width="26" height="80" rx="8" fill="#2BAA9B" opacity=".85"/><rect x="76" y="58" width="14" height="14" rx="3" fill="#8A5E08"/><rect x="110" y="48" width="14" height="14" rx="3" fill="#8A5E08"/></g><path d="M150 110c6 0 10 5 10 11s-4 9-10 9-10-3-10-9 4-11 10-11z" fill="#F2B134"/></svg>`,
+ course1:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BAA9B"/><stop offset="1" stop-color="#1B8478"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc1)"/><circle cx="80" cy="80" r="30" fill="#fff" opacity=".18"/><path d="M200 100c-14 0-25 11-25 25h50c0-14-11-25-25-25z" fill="#fff" opacity=".9"/><circle cx="200" cy="62" r="16" fill="#fff" opacity=".9"/><circle cx="245" cy="55" r="22" fill="#F2B134" opacity=".5"/></svg>`,
+ course2:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc2)"/><path d="M60 110c0-22 18-40 40-40s40 18 40 40z" fill="#fff" opacity=".85"/><circle cx="100" cy="55" r="18" fill="#fff" opacity=".85"/><circle cx="230" cy="75" r="34" fill="#fff" opacity=".15"/></svg>`,
+ course3:`<svg viewBox="0 0 300 150"><defs><linearGradient id="cc3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7F77DD"/><stop offset="1" stop-color="#3C3489"/></linearGradient></defs><rect width="300" height="150" fill="url(#cc3)"/><circle cx="150" cy="60" r="24" fill="#fff" opacity=".85"/><path d="M110 120c0-22 18-40 40-40s40 18 40 40z" fill="#fff" opacity=".85"/><circle cx="60" cy="40" r="14" fill="#F2B134" opacity=".6"/></svg>`,
+ promoFlame:`<svg viewBox="0 0 300 110"><defs><linearGradient id="pf" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="300" height="110" fill="url(#pf)"/><g fill="#fff" opacity=".22"><path d="M250 20c-10 12-4 22 2 28 8 8 4 22-6 26 22 2 36-14 30-34-3-10-14-14-26-20z"/></g><circle cx="60" cy="55" r="36" fill="#fff" opacity=".12"/></svg>`,
+ promoGroup:`<svg viewBox="0 0 300 110"><defs><linearGradient id="pg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2BAA9B"/><stop offset="1" stop-color="#1B8478"/></linearGradient></defs><rect width="300" height="110" fill="url(#pg2)"/><g fill="#fff" opacity=".22"><circle cx="235" cy="45" r="16"/><circle cx="265" cy="55" r="13"/><circle cx="210" cy="58" r="13"/><path d="M205 90c0-16 14-26 30-26s30 10 30 26z"/></g></svg>`,
+ promoFest:`<svg viewBox="0 0 300 110"><defs><linearGradient id="pfe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7F77DD"/><stop offset="1" stop-color="#3C3489"/></linearGradient></defs><rect width="300" height="110" fill="url(#pfe)"/><g fill="#fff" opacity=".2"><rect x="225" y="35" width="44" height="44" rx="8"/><path d="M225 50h44M247 35v44" stroke="#fff" stroke-width="4"/></g></svg>`,
+ postDog:`<svg viewBox="0 0 320 180"><defs><linearGradient id="pd1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BAA9B"/><stop offset=".5" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="320" height="180" fill="url(#pd1)"/><g fill="#fff" opacity=".9"><circle cx="160" cy="70" r="30"/><ellipse cx="148" cy="66" rx="4" ry="6" fill="#3a2a1a"/><ellipse cx="172" cy="66" rx="4" ry="6" fill="#3a2a1a"/><ellipse cx="160" cy="80" rx="6" ry="4" fill="#3a2a1a"/><path d="M120 140c0-22 18-40 40-40s40 18 40 40z"/></g></svg>`,
+ postMoon:`<svg viewBox="0 0 320 180"><defs><linearGradient id="pm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#AFA9EC"/><stop offset="1" stop-color="#7F77DD"/></linearGradient></defs><rect width="320" height="180" fill="url(#pm)"/><path d="M180 50a45 45 0 1 0 30 78 38 38 0 0 1-30-78z" fill="#fff" opacity=".92"/><circle cx="120" cy="60" r="3" fill="#fff"/><circle cx="240" cy="120" r="4" fill="#fff"/><circle cx="90" cy="120" r="2.5" fill="#fff"/></svg>`,
+ postGift:`<svg viewBox="0 0 320 180"><defs><linearGradient id="pgi" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F2B134"/><stop offset="1" stop-color="#E8743B"/></linearGradient></defs><rect width="320" height="180" fill="url(#pgi)"/><g fill="#fff" opacity=".92"><rect x="128" y="80" width="64" height="56" rx="6"/><rect x="120" y="64" width="80" height="22" rx="5"/><rect x="153" y="64" width="14" height="72"/><path d="M160 64c-8-16-30-10-22 4 4 6 14 4 22-4zM160 64c8-16 30-10 22 4-4 6-14 4-22-4z"/></g></svg>`
+};
+function svg(name){return SVG[name]||'';}
+let pts=1240, navStack=[], curLang='zh', checkedIn=false;
+const tabRoots=['s-home','s-profile','s-training','s-shop','s-social'];
+const navMap={'s-home':'tb-home','s-profile':'tb-profile','s-vet':'tb-home','s-training':'tb-training','s-shop':'tb-shop','s-social':'tb-social','s-notif':'tb-home','s-msgs':'tb-home','s-chat':'tb-home','s-collar':'tb-profile','s-bowl':'tb-profile','s-map':'tb-home','s-lang':'tb-home'};
+
+const titles={
+ zh:{'s-home':'宠程','s-profile':'爱宠档案','s-vet':'在线问诊','s-training':'训练打卡','s-shop':'积分商城','s-social':'宠友社区','s-notif':'通知','s-msgs':'消息','s-chat':'小王','s-collar':'智能项圈 S2','s-bowl':'智能碗 B1','s-map':'附近服务','s-lang':'语言'},
+ en:{'s-home':'PetHarmony','s-profile':'Pet Profile','s-vet':'Vet','s-training':'Training','s-shop':'Rewards Mall','s-social':'Community','s-notif':'Notifications','s-msgs':'Messages','s-chat':'Xiao Wang','s-collar':'Collar S2','s-bowl':'Bowl B1','s-map':'Nearby','s-lang':'Language'},
+ it:{'s-home':'PetHarmony','s-profile':'Profilo','s-vet':'Veterinario','s-training':'Training','s-shop':'Premi','s-social':'Community','s-notif':'Notifiche','s-msgs':'Messaggi','s-chat':'Xiao Wang','s-collar':'Collare S2','s-bowl':'Ciotola B1','s-map':'Vicino a te','s-lang':'Lingua'}
+};
+
+const strings={
+ zh:{pet_name:'巴迪 Buddy',pet_breed:'金毛寻回犬 · 3岁 · 公',tag_collar:'● 项圈在线',tag_bowl:'● 智能碗已连',my_points:'我的爱宠积分',checkin:'签到 +20',checkin_done:'已签到 ✓',
+  g_train:'训练打卡',g_redeem:'积分兑换',g_vet:'在线问诊',g_map:'附近服务',g_collar:'智能项圈',g_bowl:'智能碗',g_community:'宠友社区',g_mall:'爱宠商城',
+  promo1_t:'连续签到 7 天',promo1_s:'领 200 积分 + 皇家狗粮券',promo2_t:'邀请好友拼团',promo2_s:'S3 智能项圈 ¥299 起',promo3_t:'618 宠物节',promo3_s:'全场最高减 ¥120',
+  ai_title:'AI 情绪识别',ai_body:'项圈检测到巴迪现在很放松，是训练的好时机～',
+  wellness:'健康评分',detail:'详情',excellent:'优秀',m_walk:'今日运动',m_water:'饮水量',m_hr:'平均心率',m_sleep:'睡眠',
+  today_task:'今日任务',task_progress:'2/3 · 还差50积分',task1:'完成"坐下&等待"训练',task2:'记录今日饮水',task3:'分享一条爱宠动态',go:'去完成',
+  n1:'你好！巴迪今天怎么样？🐕',msg:'私信',n2_t:'章玉 赞了你的动态',n2_s:'"巴迪和训练打卡"',n3_t:'李梅 关注了你',n3_s:'德国牧羊犬 · 上海',follow:'关注',
+  n4_t:'预约已确认',n4_s:'王丽医生 · 6月15日 10:30',n5_t:'积分到账',n5_s:'完成训练 +50 积分',n6_t:'精油即将用尽',n6_s:'香茅精油 — 去商城补货',
+  t_5min:'5 分钟前',t_12min:'12 分钟前',t_1h:'1 小时前',t_2h:'2 小时前',t_3h:'3 小时前',t_5h:'5 小时前',t_5min2:'5分钟',n1b:'你好！巴迪今天怎么样？',msg2:'训练建议太棒了！',msg3:'周六狗公园见？',
+  c1:'你好 Marco！巴迪今天怎么样？🐕',c2:'很好！今早把训练全部完成了',c3:'太好了！Mochi 昨晚没睡好，项圈只记录到4小时睡眠',c4:'试试减少下午的活动量？医生之前是这么建议的',chat_ph:'发消息...',
+  prof_sub:'金毛寻回犬 · 公 · 3岁',neutered:'已绝育',pro_plan:'Pro 会员',health:'健康',points:'积分',rank:'排名',streak_d:'连签',
+  hw_connected:'已连接设备',collar_s2:'智能项圈 S2',collar_st:'GPS 在线 · 香薰扩散开启',online:'在线',bat78:'电量 78%',bowl_b1:'智能碗 B1',bowl_st:'称重在线 · WiFi',online2:'在线',bat91:'电量 91%',
+  health_rec:'健康档案',vacc:'疫苗接种',vacc_d:'最近：2024年3月',ok:'正常',antiparas:'驱虫',antiparas_d:'项圈 · 香茅精油',active:'生效中',records:'就诊记录',records_d:'已记录 3 次',
+  collar_full:'PetHarmony 智能项圈 S2',connected:'已连接',battery:'电池状态',autonomy_c:'预计续航<br>剩余约 18 小时',sensors_active:'活跃传感器',gps_d:'精度 3m · 每30秒更新',heart:'心率',heart_d:'最新读数：72 bpm',temp:'体温',normal:'正常',accel:'加速度计',accel_d:'步数、睡眠、活动',bark:'吠叫分析 · 情绪AI',bark_d:'灵敏度：中',diffuser:'香薰扩散器',oil_active:'当前精油：香茅',oil_d:'余量 35% · 建议补货',low:'不足',intensity:'扩散强度',intensity_d:'中 · 每小时4次',
+  bowl_full:'PetHarmony 智能碗 B1',connected2:'已连接',today_data:'今日数据',ml_water:'ml 饮水',g_food:'g 进食',meals:'餐次',min_meal:'分钟/餐',device_info:'设备信息',material:'碗体材质',conn:'连接方式',firmware:'固件',updated:'已更新',
+  next_appt:'下次预约',vet_who:'王丽医生 · PawCare 上海',cancel:'取消',share_data:'共享健康数据',rec_vets:'推荐兽医',collar_data:'项圈数据',teleconsult:'远程问诊',book:'预约',ortho:'骨科',book2:'预约',ondemand:'在线视频问诊',ondemand_d:'医生现在在线 · ¥49',start:'发起',
+  tab_session:'训练',tab_ranking:'排行榜',tab_coupon:'积分兑换',tab_products:'商品',tab_premium:'会员',
+  pts_avail:'积分可用',pts_earn:'每完成一次训练 +50 积分',off:'折扣',voucher:'券',off2:'折扣',oilkit:'精油',free:'免费',voucher2:'券',redeem:'兑换',redeem2:'兑换',redeem3:'兑换',redeem4:'兑换',redeem5:'兑换',
+  cpn1_d:'狗粮 · 满¥99可用',cpn2_n:'PetStyle 美容',cpn2_d:'首次预约 · 30天有效',cpn3_n:'平安宠物保险',cpn3_d:'首年专享',cpn4_n:'精油入门套装',cpn4_d:'香茅 + 薰衣草 10ml',cpn5_n:'在线兽医问诊',cpn5_d:'视频问诊 · 60天有效',
+  p1_n:'PetHarmony 项圈 S3',p1_d:'GPS + 高级传感器 · 钛合金',buy:'购买',p2_n:'智能碗 B2',p2_d:'称重 + 自动投喂',buy2:'购买',p3_n:'精油礼盒 4支装',p3_d:'香茅·薰衣草·印楝·天竺葵',buy3:'购买',
+  current_plan:'当前会员',pro:'Pro 会员',per_mo:'/月',pro1:'360° 健康评分',pro2:'就诊前完整报告',pro3:'高级健康预警',starter:'入门套装',one_time:' 一次性',starter_d:'项圈 + 智能碗 + 3个月 Pro',buy_bundle:'购买套装',
+  tab_friends:'关注',tab_trending:'热门',tab_suggested:'推荐',post1:'巴迪完成了第一个敏捷训练课程！还有谁在用训练模块？💪',t_golden:'金毛',t_training:'训练',share:'分享',post2:'项圈检测到 Mochi 只睡了4小时。医生建议减少下午的活动量。',t_health:'健康',t_sleep:'睡眠',share2:'分享',post3:'用500训练积分兑换了皇家狗粮券，积分系统太有动力了！🎁',t_shop:'商城',t_save:'省钱',share3:'分享',post_ph:'分享一条爱宠动态...',
+  m_all:'全部',m_vet:'兽医',m_park:'狗公园',m_grm:'美容',m_shop:'商店',nearby_list:'附近',open:'营业中',ml_vet1:'兽医 · 0.8 km · ★4.9',ml_park1:'中山公园狗活动区',ml_park1d:'狗公园 · 0.4 km',free2:'免费',ml_grm1:'美容 · 1.2 km · ★4.8',reserve:'可预约',ml_shop1:'宠物店 · 0.6 km · ★4.6',open2:'营业中',ml_vet2:'兽医 · 2.1 km · ★4.7',open3:'营业中',
+  select_lang:'选择语言 / Select language',lang_note:'小程序顶部支持一键切换语言，类似支付宝的多语言模式。',
+  nav_home:'首页',nav_pet:'爱宠',nav_train:'训练',nav_shop:'商城',nav_community:'社区',nav_collar:'智能项圈',nav_bowl:'智能碗',nav_vet:'在线问诊',nav_notif:'通知',nav_msgs:'消息',nav_map:'附近服务',nav_lang:'语言',nav_shop2:'积分商城',nav_product:'商品详情',nav_plan:'会员详情',nav_cart:'购物车',tab_academy:'专家课堂',cart_total:'合计',checkout:'结算',g_diet:'饮食扫描',g_train_c:'每日 +50',g_diet_c:'扫一扫得分',g_vet_c:'医生在线',g_map_c:'5 家在营',g_collar_c:'电量 78%',g_bowl_c:'今日 240g',g_redeem_c:'好礼热兑',g_mall_c:'618 大促',vet_search_ph:'搜索医生、科室或医院...',vf_all:'全部',vf_tele:'远程问诊',vf_ortho:'骨科',vf_emerg:'急诊',vf_near:'距离近',no_result:'没有找到匹配的结果',tab_diet:'饮食',nav_diet:'饮食扫描',nav_diet_log:'饮食记录',diet_history:'记录'},
+
+ en:{pet_name:'Buddy',pet_breed:'Golden Retriever · 3 yrs · Male',tag_collar:'● Collar online',tag_bowl:'● Bowl linked',my_points:'My Pet Points',checkin:'Check-in +20',checkin_done:'Checked in ✓',
+  g_train:'Training',g_redeem:'Redeem',g_vet:'Online Vet',g_map:'Nearby',g_collar:'Smart Collar',g_bowl:'Smart Bowl',g_community:'Community',g_mall:'Pet Mall',
+  promo1_t:'Check in 7 days',promo1_s:'200 pts + Royal Canin voucher',promo2_t:'Invite friends · Group buy',promo2_s:'S3 collar from ¥299',promo3_t:'618 Pet Festival',promo3_s:'Up to ¥120 off',
+  ai_title:'AI Mood Detection',ai_body:'The collar senses Buddy is relaxed — a great moment to train ~',
+  wellness:'Wellness Score',detail:'Details',excellent:'Excellent',m_walk:'Activity today',m_water:'Water',m_hr:'Avg heart rate',m_sleep:'Sleep',
+  today_task:"Today's Tasks",task_progress:'2/3 · 50 pts to go',task1:'Complete "Sit & Stay" training',task2:'Log today\'s water intake',task3:'Share a pet moment',go:'Go',
+  n1:'Hi! How is Buddy today? 🐕',msg:'DM',n2_t:'Yuki Zhang liked your post',n2_s:'"Buddy & training"',n3_t:'Li Mei followed you',n3_s:'German Shepherd · Shanghai',follow:'Follow',
+  n4_t:'Appointment confirmed',n4_s:'Dr. Wang · Jun 15, 10:30',n5_t:'Points credited',n5_s:'Training complete +50 pts',n6_t:'Oil running low',n6_s:'Citronella — restock in mall',
+  t_5min:'5 min ago',t_12min:'12 min ago',t_1h:'1 hr ago',t_2h:'2 hrs ago',t_3h:'3 hrs ago',t_5h:'5 hrs ago',t_5min2:'5 min',n1b:'Hi! How is Buddy today?',msg2:'Great training tip!',msg3:'Dog park Saturday?',
+  c1:'Hi Marco! How is Buddy today? 🐕',c2:'Great! Finished all the training this morning',c3:'Nice! Mochi slept badly — collar logged only 4 hrs',c4:'Try reducing afternoon activity? The vet suggested that',chat_ph:'Message...',
+  prof_sub:'Golden Retriever · Male · 3 yrs',neutered:'Neutered',pro_plan:'Pro',health:'Health',points:'Points',rank:'Rank',streak_d:'Streak',
+  hw_connected:'Connected devices',collar_s2:'Smart Collar S2',collar_st:'GPS online · Diffuser ON',online:'Online',bat78:'Battery 78%',bowl_b1:'Smart Bowl B1',bowl_st:'Scale online · WiFi',online2:'Online',bat91:'Battery 91%',
+  health_rec:'Health record',vacc:'Vaccinations',vacc_d:'Last: Mar 2024',ok:'OK',antiparas:'Parasite control',antiparas_d:'Collar · citronella oil',active:'Active',records:'Visit records',records_d:'3 visits logged',
+  collar_full:'PetHarmony Smart Collar S2',connected:'Connected',battery:'Battery',autonomy_c:'Est. battery life<br>~18 hrs remaining',sensors_active:'Active sensors',gps_d:'3m accuracy · 30s refresh',heart:'Heart rate',heart_d:'Latest: 72 bpm',temp:'Temperature',normal:'Normal',accel:'Accelerometer',accel_d:'Steps, sleep, activity',bark:'Bark analysis · Mood AI',bark_d:'Sensitivity: medium',diffuser:'Aroma diffuser',oil_active:'Active oil: Citronella',oil_d:'35% left · restock soon',low:'Low',intensity:'Diffusion intensity',intensity_d:'Medium · 4 cycles/hr',
+  bowl_full:'PetHarmony Smart Bowl B1',connected2:'Connected',today_data:"Today's data",ml_water:'ml water',g_food:'g food',meals:'meals',min_meal:'min/meal',device_info:'Device info',material:'Bowl material',conn:'Connection',firmware:'Firmware',updated:'Updated',
+  next_appt:'Next appointment',vet_who:'Dr. Wang · PawCare Shanghai',cancel:'Cancel',share_data:'Share health data',rec_vets:'Recommended vets',collar_data:'Collar data',teleconsult:'Teleconsult',book:'Book',ortho:'Orthopedics',book2:'Book',ondemand:'On-demand video vet',ondemand_d:'Vet online now · ¥49',start:'Start',
+  tab_session:'Training',tab_ranking:'Ranking',tab_coupon:'Redeem',tab_products:'Products',tab_premium:'Membership',
+  pts_avail:'points available',pts_earn:'+50 pts per training completed',off:'OFF',voucher:'voucher',off2:'OFF',oilkit:'Oils',free:'FREE',voucher2:'voucher',redeem:'Redeem',redeem2:'Redeem',redeem3:'Redeem',redeem4:'Redeem',redeem5:'Redeem',
+  cpn1_d:'Dry food · min ¥99',cpn2_n:'PetStyle Grooming',cpn2_d:'First session · 30 days',cpn3_n:'Ping An Pet Insurance',cpn3_d:'First year exclusive',cpn4_n:'Essential oils starter',cpn4_d:'Citronella + Lavender 10ml',cpn5_n:'Online vet consult',cpn5_d:'Video consult · 60 days',
+  p1_n:'PetHarmony Collar S3',p1_d:'GPS + advanced sensors · Titanium',buy:'Buy',p2_n:'Smart Bowl B2',p2_d:'Scale + auto feeder',buy2:'Buy',p3_n:'Oil gift box 4-pack',p3_d:'Citronella·Lavender·Neem·Geranium',buy3:'Buy',
+  current_plan:'Current plan',pro:'Pro',per_mo:'/mo',pro1:'360° wellness score',pro2:'Full pre-visit report',pro3:'Advanced health alerts',starter:'Starter kit',one_time:' one-time',starter_d:'Collar + Bowl + 3 months Pro',buy_bundle:'Buy bundle',
+  tab_friends:'Following',tab_trending:'Trending',tab_suggested:'Suggested',post1:'Buddy finished his first agility course! Who else uses the training module? 💪',t_golden:'Golden',t_training:'Training',share:'Share',post2:'Collar logged only 4 hrs sleep for Mochi. Vet suggests less afternoon activity.',t_health:'Health',t_sleep:'Sleep',share2:'Share',post3:'Redeemed a Royal Canin voucher with 500 pts. The points system is so motivating! 🎁',t_shop:'Shop',t_save:'Save',share3:'Share',post_ph:'Share a pet moment...',
+  m_all:'All',m_vet:'Vet',m_park:'Dog park',m_grm:'Grooming',m_shop:'Shop',nearby_list:'Nearby',open:'Open',ml_vet1:'Vet · 0.8 km · ★4.9',ml_park1:'Zhongshan Park dog area',ml_park1d:'Dog park · 0.4 km',free2:'Free',ml_grm1:'Grooming · 1.2 km · ★4.8',reserve:'Book',ml_shop1:'Pet shop · 0.6 km · ★4.6',open2:'Open',ml_vet2:'Vet · 2.1 km · ★4.7',open3:'Open',
+  select_lang:'Select language',lang_note:'The mini program supports one-tap language switching at the top, like Alipay.',
+  nav_home:'Home',nav_pet:'Pet',nav_train:'Training',nav_shop:'Mall',nav_community:'Community',nav_collar:'Collar S2',nav_bowl:'Bowl B1',nav_vet:'Vet',nav_notif:'Notifications',nav_msgs:'Messages',nav_map:'Nearby',nav_lang:'Language',nav_shop2:'Rewards Mall',nav_product:'Product',nav_plan:'Membership',nav_cart:'Cart',tab_academy:'Academy',cart_total:'Total',checkout:'Checkout',g_diet:'Food scan',g_train_c:'Daily +50',g_diet_c:'Scan & score',g_vet_c:'Vets online',g_map_c:'5 open now',g_collar_c:'Battery 78%',g_bowl_c:'240g today',g_redeem_c:'Hot rewards',g_mall_c:'618 Sale',vet_search_ph:'Search doctor, specialty or clinic...',vf_all:'All',vf_tele:'Teleconsult',vf_ortho:'Orthopedics',vf_emerg:'Emergency',vf_near:'Nearby',no_result:'No matching results',tab_diet:'Diet',nav_diet:'Food Scan',nav_diet_log:'Diet Log',diet_history:'Log'},
+
+ it:{pet_name:'Buddy',pet_breed:'Golden Retriever · 3 anni · M',tag_collar:'● Collare online',tag_bowl:'● Ciotola connessa',my_points:'I miei punti',checkin:'Check-in +20',checkin_done:'Fatto ✓',
+  g_train:'Training',g_redeem:'Premi',g_vet:'Vet online',g_map:'Vicino',g_collar:'Collare',g_bowl:'Ciotola',g_community:'Community',g_mall:'Negozio',
+  promo1_t:'Check-in 7 giorni',promo1_s:'200 punti + buono Royal Canin',promo2_t:'Invita amici · Gruppo',promo2_s:'Collare S3 da ¥299',promo3_t:'Festival Pet 618',promo3_s:'Fino a ¥120 di sconto',
+  ai_title:'AI riconoscimento umore',ai_body:'Il collare rileva che Buddy è rilassato — momento ideale per allenarsi ~',
+  wellness:'Score benessere',detail:'Dettagli',excellent:'Ottimo',m_walk:'Attività oggi',m_water:'Acqua',m_hr:'Battito medio',m_sleep:'Sonno',
+  today_task:'Attività di oggi',task_progress:'2/3 · 50 punti rimasti',task1:'Completa training "Seduto & Resta"',task2:'Registra acqua di oggi',task3:'Condividi un momento',go:'Vai',
+  n1:'Ciao! Come sta Buddy oggi? 🐕',msg:'DM',n2_t:'Yuki Zhang ha messo like',n2_s:'"Buddy e il training"',n3_t:'Li Mei ha iniziato a seguirti',n3_s:'Pastore Tedesco · Shanghai',follow:'Segui',
+  n4_t:'Visita confermata',n4_s:'Dr. Wang · 15 giu 10:30',n5_t:'Punti accreditati',n5_s:'Training completato +50 pt',n6_t:'Olio in esaurimento',n6_s:'Citronella — riordina nel negozio',
+  t_5min:'5 min fa',t_12min:'12 min fa',t_1h:'1 ora fa',t_2h:'2 ore fa',t_3h:'3 ore fa',t_5h:'5 ore fa',t_5min2:'5 min',n1b:'Ciao! Come sta Buddy oggi?',msg2:'Ottimo consiglio per il training!',msg3:'Al dog park sabato?',
+  c1:'Ciao Marco! Come sta Buddy oggi? 🐕',c2:'Benissimo! Ha completato tutto il training stamattina',c3:'Bene! Mochi ha dormito male — il collare ha letto solo 4 ore',c4:'Prova a ridurre l\'attività pomeridiana? Lo suggeriva il vet',chat_ph:'Messaggio...',
+  prof_sub:'Golden Retriever · M · 3 anni',neutered:'Sterilizzato',pro_plan:'Pro',health:'Salute',points:'Punti',rank:'Rank',streak_d:'Streak',
+  hw_connected:'Dispositivi connessi',collar_s2:'Collare S2',collar_st:'GPS online · Diffusore ON',online:'Online',bat78:'Batteria 78%',bowl_b1:'Ciotola B1',bowl_st:'Bilancia online · WiFi',online2:'Online',bat91:'Batteria 91%',
+  health_rec:'Cartella clinica',vacc:'Vaccinazioni',vacc_d:'Ultima: Mar 2024',ok:'Ok',antiparas:'Antiparassitario',antiparas_d:'Collare · olio citronella',active:'Attivo',records:'Visite registrate',records_d:'3 visite',
+  collar_full:'PetHarmony Collare S2',connected:'Connesso',battery:'Batteria',autonomy_c:'Autonomia stimata<br>~18 ore rimanenti',sensors_active:'Sensori attivi',gps_d:'Precisione 3m · ogni 30s',heart:'Battito',heart_d:'Ultima: 72 bpm',temp:'Temperatura',normal:'Normale',accel:'Accelerometro',accel_d:'Passi, sonno, attività',bark:'Analisi abbaiato · AI umore',bark_d:'Sensibilità: media',diffuser:'Diffusore oli',oil_active:'Olio attivo: Citronella',oil_d:'Resta 35% · ricarica presto',low:'Basso',intensity:'Intensità',intensity_d:'Media · 4 cicli/ora',
+  bowl_full:'PetHarmony Ciotola B1',connected2:'Connessa',today_data:'Dati di oggi',ml_water:'ml acqua',g_food:'g cibo',meals:'pasti',min_meal:'min/pasto',device_info:'Info dispositivo',material:'Materiale',conn:'Connessione',firmware:'Firmware',updated:'Aggiornato',
+  next_appt:'Prossima visita',vet_who:'Dr. Wang · PawCare Shanghai',cancel:'Annulla',share_data:'Condividi dati salute',rec_vets:'Vet consigliati',collar_data:'Dati collare',teleconsult:'Teleconsulto',book:'Prenota',ortho:'Ortopedia',book2:'Prenota',ondemand:'Video consulto on-demand',ondemand_d:'Vet online ora · ¥49',start:'Avvia',
+  tab_session:'Training',tab_ranking:'Classifica',tab_coupon:'Premi',tab_products:'Prodotti',tab_premium:'Abbonamento',
+  pts_avail:'punti disponibili',pts_earn:'+50 punti per ogni training',off:'sconto',voucher:'buono',off2:'sconto',oilkit:'Oli',free:'gratis',voucher2:'buono',redeem:'Riscatta',redeem2:'Riscatta',redeem3:'Riscatta',redeem4:'Riscatta',redeem5:'Riscatta',
+  cpn1_d:'Cibo secco · min ¥99',cpn2_n:'Toelettatura PetStyle',cpn2_d:'Prima seduta · 30 giorni',cpn3_n:'Ping An Pet Insurance',cpn3_d:'Primo anno esclusivo',cpn4_n:'Kit oli starter',cpn4_d:'Citronella + Lavanda 10ml',cpn5_n:'Consulto vet online',cpn5_d:'Video consulto · 60 giorni',
+  p1_n:'PetHarmony Collare S3',p1_d:'GPS + sensori avanzati · Titanio',buy:'Acquista',p2_n:'Ciotola Smart B2',p2_d:'Bilancia + dispenser auto',buy2:'Acquista',p3_n:'Kit oli 4 pezzi',p3_d:'Citronella·Lavanda·Neem·Geranio',buy3:'Acquista',
+  current_plan:'Piano attuale',pro:'Pro',per_mo:'/mese',pro1:'Score benessere 360°',pro2:'Report pre-visita completo',pro3:'Alert salute avanzati',starter:'Starter kit',one_time:' una tantum',starter_d:'Collare + Ciotola + 3 mesi Pro',buy_bundle:'Acquista bundle',
+  tab_friends:'Seguiti',tab_trending:'In voga',tab_suggested:'Suggeriti',post1:'Buddy ha completato il primo percorso agility! Chi altro usa il training? 💪',t_golden:'Golden',t_training:'Training',share:'Condividi',post2:'Il collare ha letto solo 4 ore di sonno per Mochi. Il vet suggerisce meno attività pomeridiana.',t_health:'Salute',t_sleep:'Sonno',share2:'Condividi',post3:'Riscattato un buono Royal Canin con 500 punti. Il sistema punti motiva tantissimo! 🎁',t_shop:'Shop',t_save:'Risparmio',share3:'Condividi',post_ph:'Condividi un momento...',
+  m_all:'Tutti',m_vet:'Vet',m_park:'Dog park',m_grm:'Toeletta',m_shop:'Shop',nearby_list:'Vicino a te',open:'Aperto',ml_vet1:'Vet · 0.8 km · ★4.9',ml_park1:'Zhongshan Park dog area',ml_park1d:'Dog park · 0.4 km',free2:'Libero',ml_grm1:'Toeletta · 1.2 km · ★4.8',reserve:'Prenota',ml_shop1:'Pet shop · 0.6 km · ★4.6',open2:'Aperto',ml_vet2:'Vet · 2.1 km · ★4.7',open3:'Aperto',
+  select_lang:'Seleziona lingua',lang_note:'Il mini program supporta il cambio lingua con un tocco in alto, come Alipay.',
+  nav_home:'Home',nav_pet:'Pet',nav_train:'Training',nav_shop:'Negozio',nav_community:'Community',nav_collar:'Collare S2',nav_bowl:'Ciotola B1',nav_vet:'Veterinario',nav_notif:'Notifiche',nav_msgs:'Messaggi',nav_map:'Vicino a te',nav_lang:'Lingua',nav_shop2:'Negozio Premi',nav_product:'Prodotto',nav_plan:'Abbonamento',nav_cart:'Carrello',tab_academy:'Accademia',cart_total:'Totale',checkout:'Paga',g_diet:'Scan cibo',g_train_c:'Giorno +50',g_diet_c:'Scansiona',g_vet_c:'Vet online',g_map_c:'5 aperti',g_collar_c:'Batteria 78%',g_bowl_c:'240g oggi',g_redeem_c:'Premi caldi',g_mall_c:'Saldi 618',vet_search_ph:'Cerca medico, specialità o clinica...',vf_all:'Tutti',vf_tele:'Teleconsulto',vf_ortho:'Ortopedia',vf_emerg:'Emergenza',vf_near:'Vicino',no_result:'Nessun risultato',tab_diet:'Dieta',nav_diet:'Scan Cibo',nav_diet_log:'Diario',diet_history:'Diario'}
+};
+
+// place data per language
+const placeData={
+ zh:{vet1:{n:'PawCare 上海',d:'兽医 · 静安 · 0.8 km',e:'★4.9 · 王丽医生 · 9:00-21:00'},vet2:{n:'PetMed 中心',d:'兽医 · 徐汇 · 2.1 km',e:'★4.7 · 陈敏医生 · 8:00-20:00'},park1:{n:'中山公园狗活动区',d:'狗公园 · 0.4 km · 免费',e:'围栏区 · 提供饮水 · 全天开放'},park2:{n:'世纪公园狗活动区',d:'狗公园 · 3.2 km',e:'超大场地 · 敏捷训练 · 6:00-21:00'},grm1:{n:'PetStyle 美容',d:'美容 · 1.2 km',e:'★4.8 · 可用宠程优惠券'},shop1:{n:'PetWorld 宠物店',d:'宠物店 · 0.6 km',e:'★4.6 · 宠程会员折扣'}},
+ en:{vet1:{n:'PawCare Shanghai',d:'Vet · Jing\'an · 0.8 km',e:'★4.9 · Dr. Wang · 9am-9pm'},vet2:{n:'PetMed Center',d:'Vet · Xuhui · 2.1 km',e:'★4.7 · Dr. Chen · 8am-8pm'},park1:{n:'Zhongshan Park dog area',d:'Dog park · 0.4 km · Free',e:'Fenced · Water · Always open'},park2:{n:'Century Park dog zone',d:'Dog park · 3.2 km',e:'XL area · Agility · 6am-9pm'},grm1:{n:'PetStyle Grooming',d:'Grooming · 1.2 km',e:'★4.8 · PetHarmony coupon'},shop1:{n:'PetWorld Store',d:'Pet shop · 0.6 km',e:'★4.6 · Member discounts'}},
+ it:{vet1:{n:'PawCare Shanghai',d:'Vet · Jing\'an · 0.8 km',e:'★4.9 · Dr. Wang · 9-21'},vet2:{n:'PetMed Center',d:'Vet · Xuhui · 2.1 km',e:'★4.7 · Dr. Chen · 8-20'},park1:{n:'Zhongshan Park dog area',d:'Dog park · 0.4 km · Gratis',e:'Recintato · Acqua · Sempre aperto'},park2:{n:'Century Park dog zone',d:'Dog park · 3.2 km',e:'Area XL · Agility · 6-21'},grm1:{n:'PetStyle Grooming',d:'Toeletta · 1.2 km',e:'★4.8 · Coupon PetHarmony'},shop1:{n:'PetWorld Store',d:'Pet shop · 0.6 km',e:'★4.6 · Sconti membri'}}
+};
+
+const rankData={
+ zh:[{n:'Mochi',o:'小王',p:1480,s:12,d:'🐩'},{n:'巴迪',o:'Marco（你）',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'李梅',p:1190,s:9,d:'🐺'},{n:'豆豆',o:'陈芳',p:980,s:5,d:'🐾'},{n:'旺财',o:'张伟',p:870,s:4,d:'🦮'}],
+ en:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12,d:'🐩'},{n:'Buddy',o:'Marco (you)',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'Li Mei',p:1190,s:9,d:'🐺'},{n:'Doudou',o:'Chen Fang',p:980,s:5,d:'🐾'},{n:'Wangcai',o:'Zhang Wei',p:870,s:4,d:'🦮'}],
+ it:[{n:'Mochi',o:'Xiao Wang',p:1480,s:12,d:'🐩'},{n:'Buddy',o:'Marco (tu)',p:1240,s:7,d:'🐕',me:true},{n:'Luna',o:'Li Mei',p:1190,s:9,d:'🐺'},{n:'Doudou',o:'Chen Fang',p:980,s:5,d:'🐾'},{n:'Wangcai',o:'Zhang Wei',p:870,s:4,d:'🦮'}]
+};
+
+const trL={
+ zh:{progress:'今日进度',streak:'连续7天',done23:'2/3 完成',avail:'+100 积分可领',ai:'项圈：巴迪很放松',ai2:'训练的好时机。',session:'今日训练',e1:'坐下 & 等待',e2:'过来',e3:'放下',min:'5 分钟',start50:'开始 +50',mypts:'我的积分',total:'总积分',today:'今日获得',use:'去商城使用积分',rank_title:'本周训练排行榜',mypos:'我的排名',of:'上海 1,240 位用户中',to1st:'距第1名 240 积分',pos:'积分',daysuf:'天'},
+ en:{progress:'Today progress',streak:'7-day streak',done23:'2/3 done',avail:'+100 pts available',ai:'Collar: Buddy is relaxed',ai2:'Ideal moment for a session.',session:"Today's session",e1:'Sit & Stay',e2:'Come',e3:'Leave it',min:'5 min',start50:'Start +50',mypts:'My points',total:'total points',today:'earned today',use:'Use points in mall',rank_title:'Weekly training ranking',mypos:'My position',of:'of 1,240 Shanghai users',to1st:'240 pts to 1st place',pos:'pts',daysuf:'d'},
+ it:{progress:'Progressi oggi',streak:'Streak 7gg',done23:'2/3 completati',avail:'+100 pt disponibili',ai:'Collare: Buddy è rilassato',ai2:'Momento ideale per la sessione.',session:'Sessione di oggi',e1:'Seduto & Resta',e2:'Vieni',e3:'Lascia',min:'5 min',start50:'Inizia +50',mypts:'I miei punti',total:'punti totali',today:'oggi',use:'Usa i punti nel negozio',rank_title:'Classifica training settimanale',mypos:'La tua posizione',of:'su 1.240 utenti Shanghai',to1st:'240 pt al 1° posto',pos:'punti',daysuf:'gg'}
+};
+
+function fmtPts(n){return curLang==='zh'||curLang==='en'?n.toLocaleString('en-US'):n.toLocaleString('it-IT');}
+
+function goTo(id,isBack){
+  const cur=document.querySelector('.scr.on');
+  if(cur&&cur.id!==id&&!isBack){
+    // root tabs reset the stack; sub-pages push
+    if(tabRoots.includes(id))navStack=[];
+    else navStack.push(cur.id);
+  }
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  const s=document.getElementById(id);
+  if(s){s.classList.add('on');const sc=s.querySelector('.scroll');if(sc)sc.scrollTop=0;}
+  if(navMap[id])document.getElementById(navMap[id]).classList.add('on');
+  // tinted hero pages (home/profile) vs white sub-pages
+  const tinted=(id==='s-home'||id==='s-profile');
+  const isRoot=tabRoots.includes(id);
+  document.getElementById('wxbar').className=tinted?'wx-bar ontint':'wx-bar';
+  document.getElementById('tabbar').style.display=isRoot?'flex':'none';
+  if(id==='s-notif')document.getElementById('tb-social').classList.remove('badge');
+  if(id==='s-training'){const tb=document.querySelector('.tab.on[id^=tr-tab-]');switchTrainingTab(tb?tb.id.replace('tr-tab-',''):'session');}
+  if(id==='s-cart')renderCart();
+  if(id==='s-map')filterMap('all');
+  if(id==='s-vet')renderVets();
+  if(id==='s-diet')renderDiet();
+  if(id==='s-diet-log')renderDietLog();
+  if(id==='s-social'){const act=document.querySelector('.tab.on[id^=so-tab-]');}
+  syncPts();
+}
+function goBack(){const prev=navStack.pop();goTo(prev||'s-home',true);}
+function syncPts(){document.querySelectorAll('#pts-home,#pts-tr,#pts-shop').forEach(el=>{if(el)el.textContent=fmtPts(pts);});}
+
+function doCheckin(){
+  if(checkedIn)return;
+  checkedIn=true;pts+=20;syncPts();
+  const b=document.getElementById('checkin-btn');
+  b.className='checkin done';
+  b.innerHTML='<i class="ti ti-check"></i><span>'+strings[curLang].checkin_done+'</span>';
+}
+
+function redeem(btn,cost){
+  if(pts<cost){btn.textContent=curLang==='zh'?'积分不足':curLang==='en'?'Not enough':'Punti insuff.';btn.style.background='#bbb';return;}
+  pts-=cost;syncPts();btn.textContent=curLang==='zh'?'已兑换':curLang==='en'?'Redeemed':'Riscattato';btn.className='cpn-used';btn.disabled=true;
+}
+
+function toggleLike(btn){btn.classList.toggle('liked');const sp=btn.querySelector('span');sp.textContent=parseInt(sp.textContent)+(btn.classList.contains('liked')?1:-1);}
+
+function addPost(){
+  const inp=document.getElementById('post-input');const txt=inp.value.trim();if(!txt)return;
+  const grads=['var(--grad)','var(--grad-warm)','linear-gradient(120deg,#2BAA9B,#1B8478)','linear-gradient(120deg,#AFA9EC,#7F77DD)'];
+  const g=grads[Math.floor(Math.random()*grads.length)];
+  const icons=['ti-paw','ti-heart','ti-star','ti-photo'];const ic=icons[Math.floor(Math.random()*icons.length)];
+  const now=curLang==='zh'?'刚刚':curLang==='en'?'Just now':'Adesso';
+  const div=document.createElement('div');div.className='post-c';
+  div.innerHTML=`<div class="post-h"><div class="uav" style="background:var(--teal)">我</div><div style="flex:1"><div class="pn">Marco Liu</div><div class="pt2">${now} · Shanghai</div></div></div><div class="p-txt">${txt}</div><div class="p-img" style="background:${g}"><i class="ti ${ic}" style="font-size:52px;color:#fff;opacity:.7"></i></div><div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>0</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>0</span></button><button class="pact"><i class="ti ti-share-3"></i><span>${strings[curLang].share}</span></button></div>`;
+  const sc=document.getElementById('social-scroll');sc.insertBefore(div,sc.firstChild);inp.value='';sc.scrollTop=0;
+}
+
+function sendMsg(){
+  const inp=document.getElementById('chat-input');const txt=inp.value.trim();if(!txt)return;
+  const d=document.createElement('div');d.className='msg-row me';
+  d.innerHTML=`<div class="msg-av" style="background:var(--teal)">我</div><div class="msg-bubble mine">${txt}</div>`;
+  document.getElementById('chat-new').appendChild(d);inp.value='';
+  const cs=document.getElementById('chat-scroll');cs.scrollTop=cs.scrollHeight;
+}
+
+
+// ===== SHOP: products, plans, cart =====
+const productData={
+ p1:{img:'collarP',price:299,old:399,
+   zh:{n:'PetHarmony 智能项圈 S3',d:'GPS + 高级传感器 · 钛合金',
+     feats:['GPS 实时定位','心率 / 体温监测','吠叫情绪 AI 识别','香薰扩散器','IP67 防水','7天续航'],
+     specs:[['材质','钛合金 + 医用陶瓷'],['电池','220mAh · 约7天'],['连接','蓝牙5.2 + 4G LTE'],['防水','IP67'],['尺寸','可调 28-52cm'],['保修','2年']],
+     desc:'专为中大型犬设计的旗舰智能项圈。钛合金外壳坚固耐磨，内置六轴传感器与情绪识别 AI，配合 App 实现训练打卡、健康预警与走失定位。'},
+   en:{n:'PetHarmony Collar S3',d:'GPS + advanced sensors · Titanium',
+     feats:['Live GPS','Heart rate / temp','Bark mood AI','Aroma diffuser','IP67 waterproof','7-day battery'],
+     specs:[['Material','Titanium + ceramic'],['Battery','220mAh · ~7 days'],['Connectivity','BLE 5.2 + 4G LTE'],['Waterproof','IP67'],['Size','Adjustable 28-52cm'],['Warranty','2 years']],
+     desc:'Flagship smart collar for medium-large dogs. Rugged titanium shell, 6-axis sensors and mood-detection AI, paired with the app for training check-ins, health alerts and lost-pet tracking.'},
+   it:{n:'PetHarmony Collare S3',d:'GPS + sensori avanzati · Titanio',
+     feats:['GPS in tempo reale','Battito / temperatura','AI umore abbaio','Diffusore aromi','Impermeabile IP67','7 giorni autonomia'],
+     specs:[['Materiale','Titanio + ceramica'],['Batteria','220mAh · ~7 giorni'],['Connettività','BLE 5.2 + 4G LTE'],['Impermeabilità','IP67'],['Taglia','Regolabile 28-52cm'],['Garanzia','2 anni']],
+     desc:'Collare smart di punta per cani medio-grandi. Scocca in titanio robusta, sensori a 6 assi e AI per il riconoscimento dell\'umore, con l\'app per check-in di training, allerte salute e localizzazione.'}},
+ p2:{img:'bowlP',price:199,old:0,
+   zh:{n:'智能碗 B2',d:'称重 + 自动投喂',
+     feats:['克级称重','定时自动投喂','饮水量监测','App 联动','可拆洗碗体'],
+     specs:[['材质','304 不锈钢碗'],['精度','±1g'],['容量','1.2L 粮仓'],['连接','WiFi 2.4GHz'],['电源','USB-C / 备用电池'],['保修','1年']],
+     desc:'称重与自动投喂二合一。精确记录每餐进食与饮水，数据自动同步到健康评分，帮助科学控制体重。'},
+   en:{n:'Smart Bowl B2',d:'Scale + auto feeder',
+     feats:['Gram-level scale','Scheduled auto-feed','Water tracking','App sync','Dishwasher-safe bowl'],
+     specs:[['Material','304 stainless bowl'],['Accuracy','±1g'],['Capacity','1.2L hopper'],['Connectivity','WiFi 2.4GHz'],['Power','USB-C / backup battery'],['Warranty','1 year']],
+     desc:'Scale and auto-feeder in one. Logs every meal and water intake precisely, syncing to the wellness score for healthy weight control.'},
+   it:{n:'Ciotola Smart B2',d:'Bilancia + dispenser auto',
+     feats:['Bilancia al grammo','Auto-pasto programmato','Monitoraggio acqua','Sync app','Ciotola lavabile'],
+     specs:[['Materiale','Acciaio 304'],['Precisione','±1g'],['Capacità','Serbatoio 1.2L'],['Connettività','WiFi 2.4GHz'],['Alimentazione','USB-C / batteria'],['Garanzia','1 anno']],
+     desc:'Bilancia e dispenser in uno. Registra pasti e acqua con precisione, sincronizzando con lo score benessere per un peso sano.'}},
+ p3:{img:'oilP',price:89,old:0,
+   zh:{n:'精油礼盒 4支装',d:'香茅·薰衣草·印楝·天竺葵',
+     feats:['天然植物配方','配合项圈扩散器','驱蚊舒缓','4 种香型'],
+     specs:[['内含','4 × 10ml'],['成分','天然植物精油'],['适用','PetHarmony 项圈扩散器'],['产地','法国普罗旺斯'],['保质期','24个月']],
+     desc:'专为项圈扩散器设计的天然精油礼盒，香茅驱蚊、薰衣草舒缓，温和不刺激。'},
+   en:{n:'Oil gift box · 4-pack',d:'Citronella·Lavender·Neem·Geranium',
+     feats:['Natural plant blend','Works with collar diffuser','Repels & soothes','4 scents'],
+     specs:[['Contains','4 × 10ml'],['Ingredients','Natural plant oils'],['For','PetHarmony collar diffuser'],['Origin','Provence, France'],['Shelf life','24 months']],
+     desc:'Natural oil set for the collar diffuser: citronella to repel insects, lavender to soothe — gentle and non-irritating.'},
+   it:{n:'Kit oli · 4 pezzi',d:'Citronella·Lavanda·Neem·Geranio',
+     feats:['Formula vegetale naturale','Per il diffusore del collare','Repellente e lenitivo','4 profumi'],
+     specs:[['Contenuto','4 × 10ml'],['Ingredienti','Oli vegetali naturali'],['Per','Diffusore collare PetHarmony'],['Origine','Provenza, Francia'],['Durata','24 mesi']],
+     desc:'Set di oli naturali per il diffusore del collare: citronella repellente, lavanda lenitiva — delicato e non irritante.'}}
+};
+const planData={
+ free:{price:0,featured:false,
+   zh:{n:'免费版',tag:'',sub:'基础记录',has:['基础健康记录','步数与活动','社区访问'],hasnt:['360° 健康评分','就诊前完整报告','高级健康预警','专家课堂全部课程']},
+   en:{n:'Free',tag:'',sub:'Basic tracking',has:['Basic health log','Steps & activity','Community access'],hasnt:['360° wellness score','Full pre-visit report','Advanced health alerts','All academy courses']},
+   it:{n:'Free',tag:'',sub:'Tracciamento base',has:['Registro base','Passi e attività','Accesso community'],hasnt:['Score benessere 360°','Report pre-visita','Allerte salute avanzate','Tutti i corsi accademia']}},
+ plus:{price:29,featured:false,
+   zh:{n:'Plus 会员',tag:'',sub:'适合日常',has:['全部免费功能','360° 健康评分','训练自适应计划','专家课堂基础课'],hasnt:['就诊前完整报告','高级健康预警']},
+   en:{n:'Plus',tag:'',sub:'For everyday',has:['Everything in Free','360° wellness score','Adaptive training plan','Academy basics'],hasnt:['Full pre-visit report','Advanced health alerts']},
+   it:{n:'Plus',tag:'',sub:'Per ogni giorno',has:['Tutto di Free','Score benessere 360°','Piano training adattivo','Accademia base'],hasnt:['Report pre-visita','Allerte salute avanzate']}},
+ pro:{price:59,featured:true,
+   zh:{n:'Pro 会员',tag:'最受欢迎',sub:'全功能 + 兽医协作',has:['全部 Plus 功能','就诊前完整报告','高级健康预警','专家课堂全部课程','兽医数据共享','优先客服']},
+   en:{n:'Pro',tag:'Most popular',sub:'Full + vet sync',has:['Everything in Plus','Full pre-visit report','Advanced health alerts','All academy courses','Vet data sharing','Priority support']},
+   it:{n:'Pro',tag:'Più scelto',sub:'Completo + vet',has:['Tutto di Plus','Report pre-visita completo','Allerte salute avanzate','Tutti i corsi accademia','Condivisione dati vet','Supporto prioritario']}}
+};
+const shopL={zh:{addcart:'加入购物车',buynow:'立即购买',spec:'规格参数',feat:'核心功能',intro:'商品介绍',cur:'当前会员',choose:'选择此方案',mo:'/月',free:'免费',perks:'权益对比',included:'包含',notinc:'不包含',empty:'购物车是空的',gobrowse:'去逛逛',cartadd:'已加入购物车',sub:'小计',ckdone:'下单成功！正在跳转支付…'},
+ en:{addcart:'Add to cart',buynow:'Buy now',spec:'Specifications',feat:'Key features',intro:'Description',cur:'Current plan',choose:'Choose this plan',mo:'/mo',free:'Free',perks:'What\'s included',included:'Included',notinc:'Not included',empty:'Your cart is empty',gobrowse:'Browse products',cartadd:'Added to cart',sub:'Subtotal',ckdone:'Order placed! Opening payment…'},
+ it:{addcart:'Aggiungi al carrello',buynow:'Compra ora',spec:'Specifiche',feat:'Funzioni chiave',intro:'Descrizione',cur:'Piano attuale',choose:'Scegli questo piano',mo:'/mese',free:'Gratis',perks:'Cosa include',included:'Incluso',notinc:'Non incluso',empty:'Il carrello è vuoto',gobrowse:'Vai ai prodotti',cartadd:'Aggiunto al carrello',sub:'Subtotale',ckdone:'Ordine inviato! Apertura pagamento…'}};
+
+let cart=[]; // {id,qty}
+function cartCount(){return cart.reduce((s,i)=>s+i.qty,0);}
+function updateCartBadges(){const n=cartCount();['cart-badge-top','cart-badge-pd'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent=n;e.style.display=n>0?'block':'none';}});const tb=document.getElementById('tb-shop');}
+function addToCart(pid){const it=cart.find(i=>i.id===pid);if(it)it.qty++;else cart.push({id:pid,qty:1});updateCartBadges();toast(shopL[curLang].cartadd);}
+
+function renderProducts(){
+  const L=shopL[curLang];
+  const ids=['p1','p2','p3'];
+  document.getElementById('shop-prodotti').innerHTML=ids.map(pid=>{
+    const p=productData[pid];const t=p[curLang];
+    const old=p.old?`<span class="pd-old">¥${p.old}</span>`:'';
+    return `<div class="prod-card" onclick="openProduct('${pid}')"><div class="prod-img media" style="height:130px">${svg(p.img)}</div><div class="prod-body"><div style="font-size:14px;font-weight:600">${t.n}</div><div style="font-size:11px;color:var(--ink2);margin-top:2px">${t.d}</div><div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">${t.feats.slice(0,3).map(f=>`<span class="pill pt">${f}</span>`).join('')}</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><div><span style="font-size:17px;font-weight:800;color:var(--coral)">¥${p.price}</span>${old}</div><button class="btn-g btn-sm" onclick="event.stopPropagation();addToCart('${pid}')">${L.addcart}</button></div></div></div>`;
+  }).join('');
+}
+function openProduct(pid){
+  const p=productData[pid];const t=p[curLang];const L=shopL[curLang];
+  const old=p.old?`<span class="pd-old">¥${p.old}</span>`:'';
+  document.getElementById('product-detail').innerHTML=`<div class="pd-hero media">${svg(p.img)}</div><div class="sec" style="margin-top:8px"><div style="display:flex;align-items:baseline"><span class="pd-price">¥${p.price}</span>${old}</div><div style="font-size:16px;font-weight:700;margin-top:6px">${t.n}</div><div style="font-size:12px;color:var(--ink2);margin-top:3px">${t.d}</div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.feat}</div><div>${t.feats.map(f=>`<span class="feat-chip"><i class="ti ti-check"></i>${f}</span>`).join('')}</div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.spec}</div>${t.specs.map(s=>`<div class="spec-row"><div class="spec-k">${s[0]}</div><div class="spec-v">${s[1]}</div></div>`).join('')}</div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.intro}</div><div style="font-size:13px;color:var(--ink);line-height:1.6">${t.desc}</div></div>`;
+  document.getElementById('product-buybar').innerHTML=`<div class="ic" onclick="goTo('s-cart')"><div class="rel"><i class="ti ti-shopping-cart"></i></div></div><button class="btn-o" style="flex:1" onclick="addToCart('${pid}')">${L.addcart}</button><button class="btn-g" style="flex:1" onclick="addToCart('${pid}');goTo('s-cart')">${L.buynow}</button>`;
+  goTo('s-product');
+}
+function renderPlans(){
+  const L=shopL[curLang];const ids=['free','plus','pro'];
+  document.getElementById('shop-premium').innerHTML=ids.map(id=>{
+    const pl=planData[id];const t=pl[curLang];
+    const price=pl.price===0?L.free:`¥${pl.price}<small>${L.mo}</small>`;
+    const badge=t.tag?`<span class="plan-badge">${t.tag}</span>`:'';
+    const cur=id==='pro'?`<span class="pill pt" style="margin-left:6px">${L.cur}</span>`:'';
+    return `<div class="plan-tier ${pl.featured?'featured':''}" onclick="openPlan('${id}')">${badge}<div class="plan-name">${t.n}${cur}</div><div style="font-size:12px;color:var(--ink2);margin-top:2px">${t.sub}</div><div class="plan-price">${price}</div>${t.has.slice(0,3).map(f=>`<div class="plan-feat"><i class="ti ti-check"></i>${f}</div>`).join('')}<div style="font-size:12px;color:var(--coral);font-weight:600;margin-top:8px">${L.perks} <i class="ti ti-chevron-right" style="font-size:13px"></i></div></div>`;
+  }).join('');
+}
+function openPlan(id){
+  const pl=planData[id];const t=pl[curLang];const L=shopL[curLang];
+  const price=pl.price===0?L.free:`¥${pl.price}<small>${L.mo}</small>`;
+  let feats=t.has.map(f=>`<div class="plan-feat"><i class="ti ti-circle-check-filled"></i>${f}</div>`).join('');
+  feats+=t.hasnt.map(f=>`<div class="plan-feat off"><i class="ti ti-circle-x"></i>${f}</div>`).join('');
+  const btn=id==='pro'?`<button class="btn-o" style="margin-top:14px">${L.cur}</button>`:`<button class="btn-g" style="margin-top:14px" onclick="toast(A('plan'))">${L.choose}</button>`;
+  document.getElementById('plan-detail').innerHTML=`<div class="sec ${pl.featured?'':''}" style="text-align:center;padding:22px"><div class="plan-name" style="font-size:20px">${t.n}</div><div style="font-size:12px;color:var(--ink2);margin-top:4px">${t.sub}</div><div class="plan-price" style="font-size:32px">${price}</div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.perks}</div>${feats}${btn}</div>`;
+  goTo('s-plan');
+}
+function renderCart(){
+  const L=shopL[curLang];const list=document.getElementById('cart-list');const foot=document.getElementById('cart-foot');
+  if(cart.length===0){list.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--ink2)"><i class="ti ti-shopping-cart-off" style="font-size:48px;opacity:.4"></i><div style="margin-top:12px;font-size:14px">${L.empty}</div><button class="btn-g" style="width:auto;padding:10px 24px;margin-top:16px" onclick="goTo('s-shop');switchShopTab('prodotti')">${L.gobrowse}</button></div>`;foot.style.display='none';return;}
+  let total=0;
+  list.innerHTML=cart.map((it,idx)=>{const p=productData[it.id];const t=p[curLang];total+=p.price*it.qty;return `<div class="cart-item"><div class="cart-thumb">${svg(p.img)}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${t.n}</div><div style="font-size:11px;color:var(--ink2);margin-top:2px">${t.d}</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><span style="font-size:15px;font-weight:700;color:var(--coral)">¥${p.price}</span><div class="qty"><button onclick="changeQty(${idx},-1)">−</button><span>${it.qty}</span><button onclick="changeQty(${idx},1)">+</button></div></div></div></div>`;}).join('');
+  document.getElementById('cart-total').textContent='¥'+total;
+  foot.style.display='flex';
+}
+function changeQty(idx,delta){cart[idx].qty+=delta;if(cart[idx].qty<=0)cart.splice(idx,1);updateCartBadges();renderCart();}
+function checkout(){toast(shopL[curLang].ckdone);cart=[];updateCartBadges();setTimeout(()=>{renderCart();},900);}
+
+function switchShopTab(t){
+  ['coupon','prodotti','premium'].forEach(x=>{document.getElementById('shop-'+x).style.display=x===t?'block':'none';});
+  document.getElementById('sh-tab-coupon').classList.toggle('on',t==='coupon');
+  document.getElementById('sh-tab-prodotti').classList.toggle('on',t==='prodotti');
+  document.getElementById('sh-tab-premium').classList.toggle('on',t==='premium');
+  if(t==='prodotti')renderProducts();
+  if(t==='premium')renderPlans();
+}
+
+function switchSocialTab(t){
+  ['amici','trending','suggeriti'].forEach(x=>{
+    document.getElementById('so-tab-'+x).classList.toggle('on',x===t);
+    document.getElementById('feed-'+x).classList.toggle('on',x===t);
+  });
+  if(t==='trending')renderTrending();
+  if(t==='suggeriti')renderSuggested();
+}
+const trendingData={
+ zh:[{u:'萌宠日记',c:'#618宠物节 我家布偶猫今天体检全部正常，智能项圈数据太实用了！',img:'postGift',tag1:'热门',tag2:'健康',likes:1280,cm:96,city:'杭州',av:'萌',avc:'#E8743B'},
+     {u:'金毛麻麻',c:'三个月训练打卡终于让 Lucky 学会了「随行」，分享我的训练计划表～',img:'postDog',tag1:'训练',tag2:'金毛',likes:842,cm:53,city:'上海',av:'金',avc:'#2BAA9B'},
+     {u:'兽医说',c:'夏季高温，记得用项圈监测体温！超过39.5°C 要警惕中暑。',img:'postMoon',tag1:'科普',tag2:'夏季',likes:2150,cm:188,city:'北京',av:'医',avc:'#0C447C'}],
+ en:[{u:'Pet Diary',c:'#618 Festival My ragdoll passed the full checkup today — the smart collar data is so handy!',img:'postGift',tag1:'Trending',tag2:'Health',likes:1280,cm:96,city:'Hangzhou',av:'P',avc:'#E8743B'},
+     {u:'Golden Mom',c:'After 3 months of training check-ins, Lucky finally learned "heel". Sharing my plan ~',img:'postDog',tag1:'Training',tag2:'Golden',likes:842,cm:53,city:'Shanghai',av:'G',avc:'#2BAA9B'},
+     {u:'Vet Says',c:'Summer heat: use the collar to monitor temperature! Above 39.5°C watch for heatstroke.',img:'postMoon',tag1:'Tips',tag2:'Summer',likes:2150,cm:188,city:'Beijing',av:'V',avc:'#0C447C'}],
+ it:[{u:'Pet Diary',c:'#Festival618 Il mio ragdoll ha passato il check-up completo oggi — i dati del collare sono utilissimi!',img:'postGift',tag1:'In voga',tag2:'Salute',likes:1280,cm:96,city:'Hangzhou',av:'P',avc:'#E8743B'},
+     {u:'Golden Mom',c:'Dopo 3 mesi di check-in, Lucky ha imparato il "piede". Condivido il mio piano ~',img:'postDog',tag1:'Training',tag2:'Golden',likes:842,cm:53,city:'Shanghai',av:'G',avc:'#2BAA9B'},
+     {u:'Il Vet',c:'Caldo estivo: usate il collare per la temperatura! Sopra 39.5°C attenzione al colpo di calore.',img:'postMoon',tag1:'Consigli',tag2:'Estate',likes:2150,cm:188,city:'Beijing',av:'V',avc:'#0C447C'}]
+};
+const suggestData={
+ zh:[{u:'Luna 和 Mia',c:'同城宠友！我们也在静安区，周末要不要一起去中山公园？',img:'postDog',tag1:'同城',tag2:'狗公园',likes:64,cm:12,city:'上海·静安',av:'L',avc:'#7F77DD',follow:true},
+     {u:'柴犬团子',c:'刚加入宠程，求关注～ 一起打卡训练攒积分！',img:'postMoon',tag1:'新人',tag2:'训练',likes:38,cm:7,city:'上海·徐汇',av:'团',avc:'#F2B134',follow:true},
+     {u:'PawCare 上海',c:'【官方】本周六免费宠物健康讲座，凭项圈数据可享专属体检折扣。',img:'postGift',tag1:'官方',tag2:'活动',likes:430,cm:51,city:'上海',av:'P',avc:'#0C447C',follow:true}],
+ en:[{u:'Luna & Mia',c:'Local pet friends! We are in Jing\'an too — Zhongshan Park this weekend?',img:'postDog',tag1:'Local',tag2:'Dog park',likes:64,cm:12,city:'Shanghai·Jing\'an',av:'L',avc:'#7F77DD',follow:true},
+     {u:'Shiba Dango',c:'Just joined PetHarmony, looking for follows ~ let us check in together!',img:'postMoon',tag1:'New',tag2:'Training',likes:38,cm:7,city:'Shanghai·Xuhui',av:'D',avc:'#F2B134',follow:true},
+     {u:'PawCare Shanghai',c:'[Official] Free pet health talk this Saturday; collar data unlocks a checkup discount.',img:'postGift',tag1:'Official',tag2:'Event',likes:430,cm:51,city:'Shanghai',av:'P',avc:'#0C447C',follow:true}],
+ it:[{u:'Luna & Mia',c:'Amici pet della zona! Siamo a Jing\'an anche noi — Zhongshan Park nel weekend?',img:'postDog',tag1:'Zona',tag2:'Dog park',likes:64,cm:12,city:'Shanghai·Jing\'an',av:'L',avc:'#7F77DD',follow:true},
+     {u:'Shiba Dango',c:'Appena entrato in PetHarmony, cerco follow ~ alleniamoci insieme!',img:'postMoon',tag1:'Nuovo',tag2:'Training',likes:38,cm:7,city:'Shanghai·Xuhui',av:'D',avc:'#F2B134',follow:true},
+     {u:'PawCare Shanghai',c:'[Ufficiale] Sabato talk gratuito sulla salute; i dati del collare sbloccano uno sconto.',img:'postGift',tag1:'Ufficiale',tag2:'Evento',likes:430,cm:51,city:'Shanghai',av:'P',avc:'#0C447C',follow:true}]
+};
+function postHTML(p){
+  const followBtn=p.follow?`<button class="btn-g btn-sm" style="margin-left:auto" onclick="this.textContent=A('follow');this.disabled=true">${({zh:'关注',en:'Follow',it:'Segui'})[curLang]}</button>`:`<i class="ti ti-dots" style="color:var(--ink3);font-size:16px;margin-left:auto"></i>`;
+  return `<div class="post-c"><div class="post-h"><div class="uav" style="background:${p.avc}">${p.av}</div><div style="flex:1"><div class="pn">${p.u}</div><div class="pt2">${p.city}</div></div>${followBtn}</div><div class="p-txt">${p.c}</div><div class="p-img media" style="height:150px">${svg(p.img)}</div><div style="display:flex;gap:5px;margin-bottom:10px"><span class="pill pt">${p.tag1}</span><span class="pill pp">${p.tag2}</span></div><div class="p-acts"><button class="pact" onclick="toggleLike(this)"><i class="ti ti-heart"></i><span>${p.likes}</span></button><button class="pact"><i class="ti ti-message-circle"></i><span>${p.cm}</span></button><button class="pact"><i class="ti ti-share-3"></i><span>${A2('share')}</span></button></div></div>`;
+}
+function renderTrending(){document.getElementById('feed-trending').innerHTML=trendingData[curLang].map(postHTML).join('');}
+function renderSuggested(){document.getElementById('feed-suggeriti').innerHTML=suggestData[curLang].map(postHTML).join('');}
+function A2(k){return ({zh:{share:'分享'},en:{share:'Share'},it:{share:'Condividi'}})[curLang][k];}
+
+
+
+// ===== DIET / FOOD SCAN (Bitepal-inspired) =====
+const foodDB={
+ zh:[
+  {key:'rc',emoji:'🥩',name:'皇家金毛专用粮',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'优质主粮',macros:[['蛋白质',30,'#2BAA9B'],['脂肪',16,'#F2B134'],['碳水',38,'#E8743B']],note:'营养均衡的优质狗粮，蛋白质充足，适合金毛日常主食。',ok:true},
+  {key:'chk',emoji:'🍗',name:'水煮鸡胸肉',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'健康加餐',macros:[['蛋白质',31,'#2BAA9B'],['脂肪',4,'#F2B134'],['碳水',0,'#E8743B']],note:'高蛋白低脂，是很好的训练奖励，注意不要加盐。',ok:true},
+  {key:'car',emoji:'🥕',name:'胡萝卜块',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'健康零食',macros:[['蛋白质',1,'#2BAA9B'],['脂肪',0,'#F2B134'],['碳水',10,'#E8743B']],note:'富含纤维和维生素，低热量，适合作为零食，但不能替代主食。',ok:true},
+  {key:'choc',emoji:'🍫',name:'巧克力',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'危险！禁止',macros:[['蛋白质',8,'#2BAA9B'],['脂肪',31,'#F2B134'],['碳水',61,'#E8743B']],note:'⚠️ 巧克力含可可碱，对狗有毒！可引起呕吐、心律失常甚至死亡。请立即收起。',ok:false},
+  {key:'bone',emoji:'🦴',name:'熟鸡骨',score:20,grade:'D',cals:'—',pts:0,tag:'有风险',macros:[['蛋白质',20,'#2BAA9B'],['脂肪',12,'#F2B134'],['碳水',0,'#E8743B']],note:'⚠️ 熟鸡骨易碎裂，可能划伤食道或肠道。建议改用专用磨牙骨。',ok:false}
+ ],
+ en:[
+  {key:'rc',emoji:'🥩',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Quality kibble',macros:[['Protein',30,'#2BAA9B'],['Fat',16,'#F2B134'],['Carbs',38,'#E8743B']],note:'Well-balanced premium kibble, ample protein, ideal as a Golden\'s staple.',ok:true},
+  {key:'chk',emoji:'🍗',name:'Boiled chicken breast',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Healthy treat',macros:[['Protein',31,'#2BAA9B'],['Fat',4,'#F2B134'],['Carbs',0,'#E8743B']],note:'High protein, low fat — a great training reward. Keep it unsalted.',ok:true},
+  {key:'car',emoji:'🥕',name:'Carrot pieces',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Healthy snack',macros:[['Protein',1,'#2BAA9B'],['Fat',0,'#F2B134'],['Carbs',10,'#E8743B']],note:'Rich in fibre and vitamins, low calorie. Fine as a snack, not a meal replacement.',ok:true},
+  {key:'choc',emoji:'🍫',name:'Chocolate',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Dangerous!',macros:[['Protein',8,'#2BAA9B'],['Fat',31,'#F2B134'],['Carbs',61,'#E8743B']],note:'⚠️ Chocolate contains theobromine, toxic to dogs! Can cause vomiting, arrhythmia, even death. Remove immediately.',ok:false},
+  {key:'bone',emoji:'🦴',name:'Cooked chicken bone',score:20,grade:'D',cals:'—',pts:0,tag:'Risky',macros:[['Protein',20,'#2BAA9B'],['Fat',12,'#F2B134'],['Carbs',0,'#E8743B']],note:'⚠️ Cooked bones splinter and can injure the throat or gut. Use a proper chew bone instead.',ok:false}
+ ],
+ it:[
+  {key:'rc',emoji:'🥩',name:'Royal Canin Golden',score:92,grade:'A',cals:'385 kcal/100g',pts:30,tag:'Crocchette top',macros:[['Proteine',30,'#2BAA9B'],['Grassi',16,'#F2B134'],['Carbo',38,'#E8743B']],note:'Crocchette premium ben bilanciate, proteine abbondanti, ideali come base per un Golden.',ok:true},
+  {key:'chk',emoji:'🍗',name:'Petto di pollo bollito',score:88,grade:'A',cals:'165 kcal/100g',pts:25,tag:'Spuntino sano',macros:[['Proteine',31,'#2BAA9B'],['Grassi',4,'#F2B134'],['Carbo',0,'#E8743B']],note:'Tante proteine, pochi grassi — ottimo premio nel training. Senza sale.',ok:true},
+  {key:'car',emoji:'🥕',name:'Pezzi di carota',score:80,grade:'B',cals:'41 kcal/100g',pts:15,tag:'Snack sano',macros:[['Proteine',1,'#2BAA9B'],['Grassi',0,'#F2B134'],['Carbo',10,'#E8743B']],note:'Ricca di fibre e vitamine, poche calorie. Ok come snack, non sostituisce il pasto.',ok:true},
+  {key:'choc',emoji:'🍫',name:'Cioccolato',score:8,grade:'E',cals:'546 kcal/100g',pts:0,tag:'Pericoloso!',macros:[['Proteine',8,'#2BAA9B'],['Grassi',31,'#F2B134'],['Carbo',61,'#E8743B']],note:'⚠️ Il cioccolato contiene teobromina, tossica per i cani! Può causare vomito, aritmie, persino morte. Toglilo subito.',ok:false},
+  {key:'bone',emoji:'🦴',name:'Osso di pollo cotto',score:20,grade:'D',cals:'—',pts:0,tag:'Rischioso',macros:[['Proteine',20,'#2BAA9B'],['Grassi',12,'#F2B134'],['Carbo',0,'#E8743B']],note:'⚠️ Le ossa cotte si scheggiano e possono ferire gola o intestino. Usa un osso da masticare apposito.',ok:false}
+ ]
+};
+const dietL={
+ zh:{title:'AI 饮食扫描',sub:'拍一拍食物，秒出营养评分',scanbtn:'扫描食物',scanning:'识别中…',pick:'选择要扫描的食物（演示）',result:'营养评分',grade:'等级',cals:'热量',macro:'营养成分',advice:'AI 建议',healthy:'健康！',award:'已奖励',pts:'积分',noaward:'不健康，未奖励积分',scanagain:'再扫一次',addlog:'记入今日饮食',today:'今日已扫描',empty:'还没有扫描记录',earned:'累计获得',daily:'今日饮食得分',tip:'每天扫描健康食物可累积积分，垃圾食品不得分还会提醒你哦！'},
+ en:{title:'AI Food Scan',sub:'Snap the food, get an instant score',scanbtn:'Scan food',scanning:'Analyzing…',pick:'Pick a food to scan (demo)',result:'Nutrition score',grade:'Grade',cals:'Calories',macro:'Macros',advice:'AI advice',healthy:'Healthy!',award:'Awarded',pts:'pts',noaward:'Unhealthy — no points',scanagain:'Scan again',addlog:'Add to today\'s log',today:'Scanned today',empty:'No scans yet',earned:'Total earned',daily:"Today's diet score",tip:'Scan healthy food daily to earn points. Junk food earns nothing and warns you!'},
+ it:{title:'Scansione AI cibo',sub:'Fotografa il cibo, punteggio istantaneo',scanbtn:'Scansiona cibo',scanning:'Analisi…',pick:'Scegli un cibo da scansionare (demo)',result:'Punteggio nutrizionale',grade:'Voto',cals:'Calorie',macro:'Macronutrienti',advice:'Consiglio AI',healthy:'Sano!',award:'Assegnati',pts:'punti',noaward:'Non sano — niente punti',scanagain:'Scansiona ancora',addlog:'Aggiungi al diario',today:'Scansionato oggi',empty:'Nessuna scansione',earned:'Totale guadagnato',daily:'Punteggio dieta oggi',tip:'Scansiona cibo sano ogni giorno per accumulare punti. Il cibo spazzatura non dà punti e ti avvisa!'}
+};
+let dietLog=[]; // {key,name,emoji,score,pts,grade,ok,time}
+let dietEarned=0;
+function gradeColor(g){return g==='A'?'#2BAA9B':g==='B'?'#5FBF8E':g==='C'?'#F2B134':g==='D'?'#E8743B':'#D14826';}
+
+function dietTabHTML(){
+  const L=dietL[curLang];
+  return `<div class="ai-card" style="margin:10px 10px"><div class="ai-emoji">🍖</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--teal-dk)">${L.title}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.sub}</div></div></div>
+  <div class="sec"><button class="btn-g" onclick="openDiet()"><i class="ti ti-scan"></i> ${L.scanbtn}</button>
+  <div style="font-size:11px;color:var(--ink2);margin-top:10px;line-height:1.5">${L.tip}</div></div>
+  <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.daily}</div><div class="score-wrap"><div class="diet-score-ring" style="background:conic-gradient(var(--teal) 0% ${dietDailyPct()}%,var(--line) ${dietDailyPct()}% 100%)"><div class="diet-score-inner"><div style="font-size:24px;font-weight:800;color:var(--teal)">${dietLog.filter(d=>d.ok).length}</div><div style="font-size:9px;color:var(--ink2)">${L.today}</div></div></div><div class="stat-mini"><div class="smr"><span class="k">${L.earned}</span><span class="v" style="color:var(--coral)">+${dietEarned} ${L.pts}</span></div><div class="smr"><span class="k">${L.today}</span><span class="v">${dietLog.length}</span></div><button class="btn-o btn-sm" style="width:100%;margin-top:4px" onclick="goTo('s-diet-log')">${L.title.includes('AI')?({zh:'查看记录',en:'View log',it:'Vedi diario'})[curLang]:''}</button></div></div></div>`;
+}
+function dietDailyPct(){const ok=dietLog.filter(d=>d.ok).length;return Math.min(100,ok*25);}
+
+function openDiet(){goTo('s-diet');}
+function renderDiet(){
+  const L=dietL[curLang];
+  document.getElementById('diet-content').innerHTML=`
+  <div style="padding:12px 12px 0">
+    <div class="scan-frame" id="scan-frame">
+      <div class="corner scan-c1"></div><div class="corner scan-c2"></div><div class="corner scan-c3"></div><div class="corner scan-c4"></div>
+      <div class="scan-food" id="scan-food">🍽️</div>
+      <div class="scan-line" id="scan-line" style="display:none"></div>
+    </div>
+  </div>
+  <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.pick}</div>
+    ${foodDB[curLang].map(f=>`<div class="food-opt" onclick="doScan('${f.key}')"><div class="food-emoji" style="background:${f.ok?'var(--teal-l)':'var(--coral-l)'}">${f.emoji}</div><div class="tx"><div class="tm">${f.name}</div><div class="ts">${f.tag}</div></div><i class="ti ti-scan" style="color:var(--ink2);font-size:20px"></i></div>`).join('')}
+  </div>
+  <div id="diet-result"></div>`;
+}
+function doScan(key){
+  const L=dietL[curLang];const f=foodDB[curLang].find(x=>x.key===key);
+  document.getElementById('scan-food').textContent=f.emoji;
+  document.getElementById('scan-line').style.display='block';
+  const frame=document.getElementById('scan-frame');frame.style.outline='2px solid var(--amber)';
+  document.getElementById('diet-result').innerHTML=`<div class="sec" style="text-align:center;color:var(--ink2)"><i class="ti ti-loader-2" style="font-size:28px"></i><div style="margin-top:6px;font-size:13px">${L.scanning}</div></div>`;
+  setTimeout(()=>{
+    document.getElementById('scan-line').style.display='none';frame.style.outline='none';
+    showDietResult(f);
+  },1500);
+}
+function showDietResult(f){
+  const L=dietL[curLang];const gc=gradeColor(f.grade);
+  const awarded=f.ok?`<div style="background:var(--teal-l);color:var(--teal-dk);border-radius:10px;padding:10px;text-align:center;font-weight:700;margin-top:4px"><i class="ti ti-circle-check-filled"></i> ${L.healthy} ${L.award} +${f.pts} ${L.pts}</div>`
+    :`<div style="background:var(--coral-l);color:var(--coral-dk);border-radius:10px;padding:10px;text-align:center;font-weight:700;margin-top:4px"><i class="ti ti-alert-triangle-filled"></i> ${L.noaward}</div>`;
+  document.getElementById('diet-result').innerHTML=`
+  <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.result}</div>
+    <div class="score-wrap"><div class="diet-score-ring" style="background:conic-gradient(${gc} 0% ${f.score}%,var(--line) ${f.score}% 100%)"><div class="diet-score-inner"><div style="font-size:26px;font-weight:800;color:${gc}">${f.score}</div><div style="font-size:9px;color:var(--ink2)">/100</div></div></div>
+    <div class="stat-mini"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:30px">${f.emoji}</span><div><div style="font-size:15px;font-weight:700">${f.name}</div><div style="font-size:11px;color:var(--ink2)">${f.tag}</div></div></div>
+    <div class="smr" style="margin-top:8px"><span class="k">${L.grade}</span><span class="v"><span style="background:${gc};color:#fff;padding:1px 9px;border-radius:6px">${f.grade}</span></span></div>
+    <div class="smr"><span class="k">${L.cals}</span><span class="v">${f.cals}</span></div></div></div>
+  </div>
+  <div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.macro}</div>
+    ${f.macros.map(m=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--ink2)">${m[0]}</span><span style="font-weight:600">${m[1]}%</span></div><div class="macro-bar"><div class="macro-f" style="width:${m[1]}%;background:${m[2]}"></div></div></div>`).join('')}
+  </div>
+  <div class="sec" style="background:${f.ok?'var(--teal-l)':'var(--coral-l)'}"><div style="font-size:13px;font-weight:700;color:${f.ok?'var(--teal-dk)':'var(--coral-dk)'};margin-bottom:4px"><i class="ti ti-robot"></i> ${L.advice}</div><div style="font-size:13px;color:var(--ink);line-height:1.55">${f.note}</div></div>
+  <div style="padding:0 10px 20px">${awarded}
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn-o" onclick="renderDiet()">${L.scanagain}</button><button class="btn-g" onclick="logDiet('${f.key}')">${L.addlog}</button></div>
+  </div>`;
+}
+function logDiet(key){
+  const f=foodDB[curLang].find(x=>x.key===key);
+  dietLog.unshift({key:f.key,name:f.name,emoji:f.emoji,score:f.score,pts:f.pts,grade:f.grade,ok:f.ok,time:new Date()});
+  if(f.ok){pts+=f.pts;dietEarned+=f.pts;syncPts();}
+  toast(f.ok?(dietL[curLang].award+' +'+f.pts):dietL[curLang].noaward);
+  goTo('s-diet-log');
+}
+function renderDietLog(){
+  const L=dietL[curLang];const c=document.getElementById('diet-log-content');
+  if(dietLog.length===0){c.innerHTML=`<div style="text-align:center;padding:50px 20px;color:var(--ink2)"><i class="ti ti-clipboard-list" style="font-size:44px;opacity:.4"></i><div style="margin-top:10px;font-size:14px">${L.empty}</div></div>`;return;}
+  c.innerHTML=`<div class="sec" style="margin:0 0 10px"><div class="stat2"><div class="sbox"><div class="sv" style="color:var(--coral)">+${dietEarned}</div><div class="sl">${L.earned} ${L.pts}</div></div><div class="sbox"><div class="sv">${dietLog.length}</div><div class="sl">${L.today}</div></div></div></div>`+
+  dietLog.map(d=>{const gc=gradeColor(d.grade);const tm=d.time.toLocaleTimeString(curLang==='zh'?'zh-CN':curLang,{hour:'2-digit',minute:'2-digit'});return `<div class="cart-item"><div class="food-emoji" style="background:${d.ok?'var(--teal-l)':'var(--coral-l)'};width:48px;height:48px;font-size:24px">${d.emoji}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${d.name}</div><div style="font-size:11px;color:var(--ink2);margin-top:2px">${tm} · <span style="color:${gc};font-weight:700">${d.grade}</span> · ${d.score}/100</div></div><span class="pill ${d.ok?'pt':'pc'}">${d.ok?'+'+d.pts:'0'}</span></div>`;}).join('');
+}
+
+// ===== Expert Academy =====
+const academyData={
+ zh:{title:'专家课堂',sub:'由认证训犬师与兽医出品',watch:'观看',lessons:'节课',by:'主讲',
+   feat:{tag:'本周精选',t:'幼犬社会化的黄金90天',by:'李博士 · 注册兽医行为学家',dur:'12:40',views:'3.2万次观看'},
+   cats:['全部','基础训练','行为纠正','健康护理','营养'],
+   courses:[
+    {img:'course1',t:'「坐下·等待·过来」零基础三件套',by:'王教练 · CPDT认证训犬师',dur:'08:15',lv:'入门',n:5,av:'expert1',name:'王教练'},
+    {img:'course2',t:'拆家、乱叫怎么办？行为纠正实操',by:'陈老师 · 动物行为咨询师',dur:'15:30',lv:'进阶',n:8,av:'expert2',name:'陈老师'},
+    {img:'course3',t:'金毛/拉布拉多关节养护指南',by:'李博士 · 注册兽医',dur:'10:05',lv:'健康',n:4,av:'expert1',name:'李博士'}]},
+ en:{title:'Expert Academy',sub:'By certified trainers & vets',watch:'Watch',lessons:'lessons',by:'By',
+   feat:{tag:'Featured this week',t:'The golden 90 days of puppy socialization',by:'Dr. Li · Vet behaviorist',dur:'12:40',views:'32k views'},
+   cats:['All','Basics','Behavior','Health care','Nutrition'],
+   courses:[
+    {img:'course1',t:'Sit · Stay · Come: the beginner trio',by:'Coach Wang · CPDT trainer',dur:'08:15',lv:'Beginner',n:5,av:'expert1',name:'Coach Wang'},
+    {img:'course2',t:'Chewing & barking? Hands-on behavior fixes',by:'Ms. Chen · Behavior consultant',dur:'15:30',lv:'Advanced',n:8,av:'expert2',name:'Ms. Chen'},
+    {img:'course3',t:'Joint care for Goldens & Labs',by:'Dr. Li · Registered vet',dur:'10:05',lv:'Health',n:4,av:'expert1',name:'Dr. Li'}]},
+ it:{title:'Accademia Esperti',sub:'Da educatori e veterinari certificati',watch:'Guarda',lessons:'lezioni',by:'Di',
+   feat:{tag:'In evidenza',t:'I 90 giorni d\'oro della socializzazione del cucciolo',by:'Dr. Li · Comportamentalista vet',dur:'12:40',views:'32k visualizzazioni'},
+   cats:['Tutti','Base','Comportamento','Cura','Nutrizione'],
+   courses:[
+    {img:'course1',t:'Seduto · Resta · Vieni: il trio base',by:'Coach Wang · Educatore CPDT',dur:'08:15',lv:'Base',n:5,av:'expert1',name:'Coach Wang'},
+    {img:'course2',t:'Morsi e abbai? Correzione comportamentale pratica',by:'Sig.ra Chen · Consulente comportamentale',dur:'15:30',lv:'Avanzato',n:8,av:'expert2',name:'Sig.ra Chen'},
+    {img:'course3',t:'Cura articolazioni per Golden e Labrador',by:'Dr. Li · Veterinario',dur:'10:05',lv:'Salute',n:4,av:'expert1',name:'Dr. Li'}]}
+};
+function academyHTML(){
+  const D=academyData[curLang];
+  let cats=D.cats.map((c,i)=>`<span class="feat-chip" style="${i===0?'background:var(--coral-l);color:var(--coral)':''}" onclick="toast(A('more'))">${c}</span>`).join('');
+  let courses=D.courses.map(c=>`<div class="course-card" onclick="toast(D_watch())"><div class="course-thumb">${svg(c.img)}<div class="course-play"><i class="ti ti-player-play-filled"></i></div><div class="course-dur">${c.dur}</div></div><div style="padding:12px"><div style="font-size:14px;font-weight:600;color:var(--ink);line-height:1.4">${c.t}</div><div style="display:flex;align-items:center;gap:8px;margin-top:9px"><div class="expert-av">${svg(c.av)}</div><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;color:var(--ink)">${c.name}</div><div style="font-size:11px;color:var(--ink2)">${c.by.split('·')[1]||''}</div></div><span class="pill pa">${c.lv}</span></div><div style="display:flex;align-items:center;gap:12px;margin-top:9px;font-size:11px;color:var(--ink2)"><span><i class="ti ti-list-check"></i> ${c.n} ${D.lessons}</span><span><i class="ti ti-clock"></i> ${c.dur}</span></div></div></div>`).join('');
+  return `<div style="padding:10px 10px 0"><div class="course-card" onclick="toast(D_watch())"><div class="course-thumb" style="height:150px">${svg('course3')}<div class="course-play"><i class="ti ti-player-play-filled"></i></div><div class="course-dur">${D.feat.dur}</div><div style="position:absolute;left:10px;top:10px;background:var(--grad-warm);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px">${D.feat.tag}</div></div><div style="padding:12px"><div style="font-size:15px;font-weight:700;color:var(--ink);line-height:1.4">${D.feat.t}</div><div style="font-size:12px;color:var(--ink2);margin-top:6px">${D.feat.by} · ${D.feat.views}</div></div></div></div><div style="padding:2px 10px 10px;white-space:nowrap;overflow-x:auto">${cats}</div><div style="padding:0 10px 20px">${courses}</div>`;
+}
+function D_watch(){return ({zh:'正在加载课程…',en:'Loading course…',it:'Caricamento corso…'})[curLang];}
+
+function switchTrainingTab(t){
+  document.getElementById('tr-tab-session').classList.toggle('on',t==='session');
+  document.getElementById('tr-tab-diet').classList.toggle('on',t==='diet');
+  document.getElementById('tr-tab-academy').classList.toggle('on',t==='academy');
+  document.getElementById('tr-tab-ranking').classList.toggle('on',t==='ranking');
+  const c=document.getElementById('training-content');const L=trL[curLang];
+  if(t==='diet'){c.innerHTML=dietTabHTML();return;}
+  if(t==='academy'){c.innerHTML=academyHTML();return;}
+  if(t==='ranking'){
+    let h='<div class="sec"><div class="sec-h"><span class="sec-bar"></span>'+L.rank_title+'</div>';
+    rankData[curLang].forEach((r,i)=>{const cls=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';h+=`<div class="rank-row"><div class="rank-num ${cls}">${i+1}</div><div style="font-size:22px">${r.d}</div><div class="tx"><div class="tm" style="${r.me?'color:var(--coral)':''}">${r.n}</div><div class="ts">${r.o} · ${curLang==='zh'?'连续'+r.s+'天':curLang==='en'?'Streak '+r.s+'d':'Streak '+r.s+'gg'}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--coral)">${fmtPts(r.p)}</div><div style="font-size:10px;color:var(--ink2)">${L.pos}</div></div></div>`;});
+    h+='</div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>'+L.mypos+'</div><div class="sbox"><div style="font-size:26px;font-weight:800;color:var(--coral)">#2</div><div style="font-size:12px;color:var(--ink2);margin-top:2px">'+L.of+'</div><div class="prog" style="margin-top:8px"><div class="pf" style="width:84%"></div></div><div style="font-size:11px;color:var(--ink2);margin-top:5px">'+L.to1st+'</div></div></div>';
+    c.innerHTML=h;
+  }else{
+    c.innerHTML=`<div class="sec"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:14px;font-weight:600">${L.progress}</span><span class="pill pp">${L.streak}</span></div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--ink2)">${L.done23}</span><span style="font-size:12px;color:var(--coral);font-weight:600">${L.avail}</span></div><div class="prog"><div class="pf" style="width:66%"></div></div></div><div class="ai-card" style="margin:8px 10px"><div class="ai-emoji">😌</div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--teal-dk)"><i class="ti ti-sparkles"></i> ${L.ai}</div><div style="font-size:12px;color:var(--ink);margin-top:3px">${L.ai2}</div></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.session}</div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e1}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row"><div class="ex-num ex-done"><i class="ti ti-check" style="font-size:13px"></i></div><div class="tx"><div class="tm">${L.e2}</div><div class="ts">${L.min}</div></div><span class="pill pt">+50</span></div><div class="row" id="ex3-row"><div class="ex-num">3</div><div class="tx"><div class="tm">${L.e3}</div><div class="ts">${L.min}</div></div><button class="btn-g btn-sm" onclick="completeEx()">${L.start50}</button></div></div><div class="sec"><div class="sec-h"><span class="sec-bar"></span>${L.mypts}</div><div class="stat2"><div class="sbox"><div class="si" style="color:var(--coral)"><i class="ti ti-star"></i></div><div class="sv" id="pts-tr">${fmtPts(pts)}</div><div class="sl">${L.total}</div></div><div class="sbox"><div class="si" style="color:var(--amber-dk)"><i class="ti ti-gift"></i></div><div class="sv">100</div><div class="sl">${L.today}</div></div></div><button class="btn-g" style="margin-top:12px" onclick="goTo('s-shop')">${L.use}</button></div>`;
+  }
+}
+function completeEx(){pts+=50;syncPts();const r=document.getElementById('ex3-row');if(!r)return;const n=r.querySelector('.ex-num');n.className='ex-num ex-done';n.innerHTML='<i class="ti ti-check" style="font-size:13px"></i>';r.querySelector('button').outerHTML='<span class="pill pt">+50</span>';}
+
+
+
+// ===== VET search & filter =====
+const vetData={
+ zh:[{n:'王丽 医生',h:'PawCare 上海',km:0.8,r:4.9,tags:[['项圈数据','pt'],['远程问诊','pb']],f:['tele','near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'},
+     {n:'陈敏 医生',h:'PetMed 中心',km:2.1,r:4.7,tags:[['骨科','pp']],f:['ortho'],ico:'ti-bone',bg:'#EEEDFE',c:'#3C3489'},
+     {n:'张伟 医生',h:'宠安24h急诊',km:3.5,r:4.8,tags:[['急诊','pc'],['远程问诊','pb']],f:['emerg','tele'],ico:'ti-ambulance',bg:'#FCEAE0',c:'#9E3F12'},
+     {n:'李娜 医生',h:'萌宠诊所',km:1.4,r:4.6,tags:[['皮肤科','pa'],['项圈数据','pt']],f:['near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'}],
+ en:[{n:'Dr. Wang Li',h:'PawCare Shanghai',km:0.8,r:4.9,tags:[['Collar data','pt'],['Teleconsult','pb']],f:['tele','near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'},
+     {n:'Dr. Chen Min',h:'PetMed Center',km:2.1,r:4.7,tags:[['Orthopedics','pp']],f:['ortho'],ico:'ti-bone',bg:'#EEEDFE',c:'#3C3489'},
+     {n:'Dr. Zhang Wei',h:'PetSafe 24h ER',km:3.5,r:4.8,tags:[['Emergency','pc'],['Teleconsult','pb']],f:['emerg','tele'],ico:'ti-ambulance',bg:'#FCEAE0',c:'#9E3F12'},
+     {n:'Dr. Li Na',h:'Cutie Pet Clinic',km:1.4,r:4.6,tags:[['Dermatology','pa'],['Collar data','pt']],f:['near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'}],
+ it:[{n:'Dr. Wang Li',h:'PawCare Shanghai',km:0.8,r:4.9,tags:[['Dati collare','pt'],['Teleconsulto','pb']],f:['tele','near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'},
+     {n:'Dr. Chen Min',h:'PetMed Center',km:2.1,r:4.7,tags:[['Ortopedia','pp']],f:['ortho'],ico:'ti-bone',bg:'#EEEDFE',c:'#3C3489'},
+     {n:'Dr. Zhang Wei',h:'PetSafe Pronto Soccorso 24h',km:3.5,r:4.8,tags:[['Emergenza','pc'],['Teleconsulto','pb']],f:['emerg','tele'],ico:'ti-ambulance',bg:'#FCEAE0',c:'#9E3F12'},
+     {n:'Dr. Li Na',h:'Clinica Cutie Pet',km:1.4,r:4.6,tags:[['Dermatologia','pa'],['Dati collare','pt']],f:['near'],ico:'ti-stethoscope',bg:'#E6F1FB',c:'#0C447C'}]
+};
+let vetFilter='all';
+function vetChip(el,f){document.querySelectorAll('#s-vet .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');vetFilter=f;renderVets();}
+function renderVets(){
+  const L=shopL[curLang];const q=(document.getElementById('vet-search')?.value||'').toLowerCase().trim();
+  const list=vetData[curLang].filter(v=>{
+    let ok=true;
+    if(vetFilter==='near')ok=v.km<=1.5;else if(vetFilter!=='all')ok=v.f.includes(vetFilter);
+    if(ok&&q){const hay=(v.n+' '+v.h+' '+v.tags.map(t=>t[0]).join(' ')).toLowerCase();ok=hay.includes(q);}
+    return ok;
+  });
+  const cont=document.getElementById('vet-list');const empty=document.getElementById('vet-empty');
+  const bookL=({zh:'预约',en:'Book',it:'Prenota'})[curLang];
+  cont.innerHTML=list.map(v=>{
+    const stars='★★★★★'.slice(0,Math.round(v.r))+'☆☆☆☆☆'.slice(0,5-Math.round(v.r));
+    return `<div class="row" style="align-items:flex-start"><div class="ico" style="background:${v.bg};color:${v.c};width:42px;height:42px"><i class="ti ${v.ico}"></i></div><div style="flex:1"><div class="tm">${v.n}</div><div class="ts">${v.h} · ${v.km} km</div><div style="color:var(--amber-dk);font-size:11px;margin-top:2px">${stars} ${v.r}</div><div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">${v.tags.map(t=>`<span class="pill ${t[1]}">${t[0]}</span>`).join('')}</div></div><button class="btn-g btn-sm" onclick="toast(A('book'))">${bookL}</button></div>`;
+  }).join('');
+  empty.style.display=list.length?'none':'block';
+  const cnt=document.getElementById('vet-count');if(cnt)cnt.textContent=list.length+(curLang==='zh'?' 位':'');
+}
+function filterVets(){renderVets();}
+
+const mapCatL={zh:{all:'全部服务',vet:'附近兽医',park:'狗公园',grm:'宠物美容',shop:'宠物店'},en:{all:'All services',vet:'Nearby vets',park:'Dog parks',grm:'Grooming',shop:'Pet shops'},it:{all:'Tutti i servizi',vet:'Veterinari',park:'Dog park',grm:'Toelettatura',shop:'Negozi'}};
+function filterMap(cat){
+  ['all','vet','park','grm','shop'].forEach(x=>document.getElementById('map-tab-'+x).classList.toggle('on',x===cat));
+  document.querySelectorAll('#map-list .row').forEach(r=>{r.style.display=(cat==='all'||r.dataset.cat===cat)?'flex':'none';});
+  document.querySelectorAll('#map-area .map-pin').forEach(p=>{const c=p.dataset.pin;const show=(c==='you'||cat==='all'||c===cat);p.classList.toggle('hide',!show);});
+  let n=document.querySelectorAll('#map-list .row').length;
+  if(cat!=='all')n=document.querySelectorAll('#map-list .row[data-cat="'+cat+'"]').length;
+  const chip=document.getElementById('map-chip');if(chip)chip.innerHTML='<i class="ti ti-map-pin" style="font-size:12px"></i> '+mapCatL[curLang][cat]+' · '+n;
+  const info=document.getElementById('place-info');if(info)info.style.display='none';
+}
+function showPlace(id){const p=placeData[curLang][id];const el=document.getElementById('place-info');el.style.display='block';const dir=curLang==='zh'?'导航':curLang==='en'?'Directions':'Indicazioni';const det=curLang==='zh'?'详情':curLang==='en'?'Details':'Dettagli';el.innerHTML=`<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">${p.n}</div><div style="font-size:12px;color:var(--ink2);margin-bottom:3px">${p.d}</div><div style="font-size:11px;color:var(--ink2);margin-bottom:10px">${p.e}</div><div style="display:flex;gap:8px"><button class="btn-g btn-sm" style="flex:1">${dir}</button><button class="btn-o btn-sm" style="flex:1">${det}</button></div>`;}
+
+function setLang(l){
+  curLang=l;
+  ['zh','en','it'].forEach(x=>document.getElementById('lang-'+x).classList.toggle('on',x===l));
+  const s=strings[l];
+  document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(s[k]!==undefined)el.innerHTML=s[k];});
+  document.querySelectorAll('[data-tp]').forEach(el=>{const k=el.dataset.tp;if(s[k]!==undefined)el.placeholder=s[k];});
+  // preview chips
+  document.getElementById('lang-s-home').textContent=s.nav_home;
+  document.getElementById('lang-s-train').textContent=s.nav_train;
+  document.getElementById('lang-s-shop').textContent=s.nav_shop;
+  // sheet + fab labels
+  const cancelTxt={zh:'取消',en:'Cancel',it:'Annulla'}[l];
+  document.getElementById('sheet-cancel').textContent=cancelTxt;
+  document.getElementById('fab-lbl').textContent={zh:'文/A',en:'EN',it:'IT'}[l];
+  ['zh','en','it'].forEach(x=>document.getElementById('opt-'+x).classList.toggle('on',x===l));
+  // re-render dynamic training panel + points formatting
+  switchTrainingTab(document.getElementById('tr-tab-ranking').classList.contains('on')?'ranking':'session');
+  syncPts();
+  // inline nav titles use data-t and are handled by the loop above
+}
+
+// ===== language sheet =====
+function openSheet(){
+  ['zh','en','it'].forEach(x=>document.getElementById('opt-'+x).classList.toggle('on',x===curLang));
+  document.getElementById('sheet').classList.add('on');
+}
+function closeSheet(){document.getElementById('sheet').classList.remove('on');}
+
+// ===== toast =====
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('on'),1600);
+}
+// localized generic confirmations for decorative buttons
+const act={
+ zh:{follow:'已关注 ✓',book:'预约请求已发送',buy:'已加入购物车',share:'已分享到朋友圈',cancel:'预约已取消',share_data:'健康数据已共享给医生',start:'正在接入兽医…',start50:'训练开始！',plan:'正在跳转支付…',more:'功能开发中'},
+ en:{follow:'Following ✓',book:'Booking request sent',buy:'Added to cart',share:'Shared to Moments',cancel:'Appointment cancelled',share_data:'Health data shared with vet',start:'Connecting to vet…',start50:'Training started!',plan:'Opening payment…',more:'Coming soon'},
+ it:{follow:'Ora segui ✓',book:'Richiesta inviata',buy:'Aggiunto al carrello',share:'Condiviso',cancel:'Visita annullata',share_data:'Dati condivisi col vet',start:'Connessione al vet…',start50:'Training avviato!',plan:'Apertura pagamento…',more:'In arrivo'}
+};
+function A(k){return (act[curLang]||act.zh)[k]||(act.zh)[k];}
+
+// map specific data-t button keys -> toast action key
+const btnAction={follow:'follow',book:'book',book2:'book',buy:'buy',buy2:'buy',buy3:'buy',buy_bundle:'buy',share:'share',share2:'share',share3:'share',cancel:'cancel',share_data:'share_data',start:'start',redeem:null};
+
+// ===== GLOBAL touch handling (delegation) =====
+// 1) visual feedback on every interactive element
+// 2) default toast action for decorative buttons that have no onclick
+const interactiveSel='button,[onclick],.g9,.hw-card,.notif-item,.map-pin,.lang-btn,.tab,.tb,.pact,.cpn-btn,.row[onclick]';
+function isInteractive(el){return el.closest(interactiveSel);}
+
+document.querySelector('.ph').addEventListener('pointerdown',function(e){
+  const el=isInteractive(e.target);
+  if(el){el.classList.add('tapped');}
+},{passive:true});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>{
+  document.querySelector('.ph').addEventListener(ev,function(){
+    document.querySelectorAll('.tapped').forEach(el=>el.classList.remove('tapped'));
+  },{passive:true});
+});
+
+// default action for buttons WITHOUT their own onclick
+document.querySelectorAll('button').forEach(b=>{
+  if(b.getAttribute('onclick'))return;          // already wired
+  if(b.classList.contains('back'))return;
+  if(b.classList.contains('c-send'))return;
+  b.addEventListener('click',function(){
+    const k=b.dataset.t;
+    const mapped=k&&btnAction[k]!==undefined?btnAction[k]:null;
+    if(mapped){toast(A(mapped));}
+    else if(b.textContent.match(/¥|Pro|Plus|bundle|套装|会员/)){toast(A('plan'));}
+    else{toast(A('more'));}
+  });
+});
+
+// dots / chevrons / decorative rows -> gentle toast so nothing feels dead
+document.querySelectorAll('.ti-dots-vertical').forEach(el=>{el.style.cursor='pointer';el.addEventListener('click',()=>goTo('s-msgs'));});
+// three-dots on posts -> open messaging (delegated, also covers dynamically added)
+document.querySelector('.ph').addEventListener('click',function(e){
+  const d=e.target.closest('.ti-dots');
+  if(d){e.stopPropagation();goTo('s-msgs');}
+},true);
+document.querySelectorAll('.row .chev').forEach(el=>{el.style.cursor='pointer';el.addEventListener('click',()=>toast(A('more')));});
+
+
+// ===== inject static SVG illustrations =====
+function paintStatic(){
+  const set=(id,name)=>{const e=document.getElementById(id);if(e)e.innerHTML=svg(name);};
+  set('home-av','dog');set('prof-av','dog');
+  set('collar-media','collarP');set('bowl-media','bowlP');
+  set('post-img-1','postDog');set('post-img-2','postMoon');set('post-img-3','postGift');
+  set('bn1','promoFlame');set('bn2','promoGroup');set('bn3','promoFest');
+}
+paintStatic();
+
+// ===== draggable language FAB =====
+(function(){
+  const fab=document.getElementById('langfab');const ph=document.querySelector('.ph');
+  let dragging=false,moved=false,sx,sy,ox,oy;
+  function down(e){
+    dragging=true;moved=false;
+    const pt=e.touches?e.touches[0]:e;
+    const r=fab.getBoundingClientRect();const pr=ph.getBoundingClientRect();
+    ox=r.left-pr.left;oy=r.top-pr.top;sx=pt.clientX;sy=pt.clientY;
+    fab.classList.add('dragging');
+  }
+  function move(e){
+    if(!dragging)return;
+    const pt=e.touches?e.touches[0]:e;
+    const dx=pt.clientX-sx,dy=pt.clientY-sy;
+    if(Math.abs(dx)>4||Math.abs(dy)>4)moved=true;
+    const pr=ph.getBoundingClientRect();
+    let nx=ox+dx,ny=oy+dy;
+    nx=Math.max(6,Math.min(nx,pr.width-52));
+    ny=Math.max(50,Math.min(ny,pr.height-110));
+    fab.style.left=nx+'px';fab.style.top=ny+'px';fab.style.right='auto';fab.style.bottom='auto';
+    if(e.cancelable)e.preventDefault();
+  }
+  function up(){if(!dragging)return;dragging=false;fab.classList.remove('dragging');}
+  fab.addEventListener('mousedown',down);fab.addEventListener('touchstart',down,{passive:true});
+  window.addEventListener('mousemove',move);window.addEventListener('touchmove',move,{passive:false});
+  window.addEventListener('mouseup',up);window.addEventListener('touchend',up);
+  // click only if not dragged
+  fab.addEventListener('click',function(e){if(moved){moved=false;return;}openSheet();});
+})();
+
+// init
+switchTrainingTab('session');
+setLang('zh');
+syncPts();
+document.getElementById('tb-social').classList.add('badge');
+</script>
+</body>
+</html>
