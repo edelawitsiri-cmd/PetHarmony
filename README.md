@@ -8,8 +8,8 @@ nearby services map, a community feed, and a rewards mall.
 ## Demo
 
 Open [`index.html`](index.html) in any modern browser. The prototype is a
-single self-contained file (no build step, no external images — all
-illustrations are inline SVG; icons load from the Tabler Icons CDN).
+single fully self-contained file: no build step, no internet connection
+needed — all illustrations and icons are inline SVG.
 
 ## Features
 
