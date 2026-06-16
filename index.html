@@ -356,6 +356,17 @@ i.ti{display:inline-flex;align-items:center;justify-content:center;width:1em;hei
 i.ti svg{width:100%;height:100%;display:block}
 .ti-loader-2 svg{animation:tispin 1s linear infinite}
 @keyframes tispin{to{transform:rotate(360deg)}}
+
+/* ===== guided auto-tour ===== */
+.demo-fab{position:absolute;left:14px;bottom:70px;z-index:41;display:flex;align-items:center;gap:6px;background:var(--grad-warm);color:#fff;border:none;border-radius:22px;padding:9px 15px;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(232,116,59,.35);cursor:pointer}
+.demo-fab i{font-size:16px}
+.tour-cap{position:absolute;left:50%;top:54px;transform:translateX(-50%) translateY(-8px);z-index:70;background:rgba(17,24,39,.9);color:#fff;border-radius:14px;padding:10px 16px;max-width:300px;text-align:center;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;backdrop-filter:blur(6px)}
+.tour-cap.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.tour-cap .tc-t{font-size:14px;font-weight:700}
+.tour-cap .tc-s{font-size:11px;opacity:.85;margin-top:2px}
+.tour-prog{position:absolute;left:0;top:0;height:3px;background:var(--amber);z-index:71;transition:width .3s linear;border-radius:0 3px 3px 0}
+.tour-stop{position:absolute;right:14px;top:52px;z-index:72;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.tour-stop.on{display:flex}
 </style>
 </head>
 <body>
@@ -1674,12 +1685,86 @@ function paintTI(root){
 }
 new MutationObserver(()=>paintTI(document)).observe(document.body,{childList:true,subtree:true});
 
+
+// ===== GUIDED AUTO-TOUR (for screen recording) =====
+function Lc(o){return o[curLang]||o.it;}
+const tourSteps=[
+ {fn:()=>goTo('s-home'), cap:{it:['Home','Benessere, punti e check-in giornaliero'],en:['Home','Wellness, points & daily check-in'],zh:['首页','健康评分 · 积分 · 每日签到']}, ms:3200},
+ {fn:()=>{if(!checkedIn)doCheckin();}, cap:{it:['Check-in','+20 punti ogni giorno'],en:['Check-in','+20 points every day'],zh:['签到','每日 +20 积分']}, ms:2600},
+ {fn:()=>{goTo('s-training');switchTrainingTab('session');}, cap:{it:['Allenamento','Sessioni gamificate, punti per ogni esercizio'],en:['Training','Gamified sessions, points per exercise'],zh:['训练','游戏化训练 · 每次得分']}, ms:3200},
+ {fn:()=>completeEx(), cap:{it:['Completa un esercizio','+50 punti'],en:['Complete an exercise','+50 points'],zh:['完成训练','+50 积分']}, ms:2600},
+ {fn:()=>switchTrainingTab('ranking'), cap:{it:['Classifica','Sfida gli altri proprietari'],en:['Ranking','Compete with other owners'],zh:['排行榜','与其他主人比拼']}, ms:3000},
+ {fn:()=>switchTrainingTab('academy'), cap:{it:['Academy esperti','Corsi video di veterinari e addestratori'],en:['Expert Academy','Video courses by vets & trainers'],zh:['专家课堂','兽医与训犬师视频课']}, ms:3200},
+ {fn:()=>goTo('s-diet'), cap:{it:['Scanner cibo AI','Scegli un alimento da analizzare'],en:['AI food scan','Pick a food to analyse'],zh:['AI 饮食扫描','选择要扫描的食物']}, ms:2800},
+ {fn:()=>doScan('rc'), cap:{it:['Analisi nutrizionale','Punteggio, macro e consigli AI'],en:['Nutrition analysis','Score, macros & AI advice'],zh:['营养分析','评分 · 营养 · AI 建议']}, ms:4200},
+ {fn:()=>doScan('choc'), cap:{it:['Cibo non sicuro','L’AI avvisa e non assegna punti'],en:['Unsafe food','AI warns you, no points'],zh:['危险食物','AI 提醒 · 不得分']}, ms:4000},
+ {fn:()=>goTo('s-diet-log'), cap:{it:['Diario alimentare','Storico delle scansioni'],en:['Diet log','Your scan history'],zh:['饮食记录','扫描历史']}, ms:2800},
+ {fn:()=>goTo('s-collar'), cap:{it:['Collare smart S2','GPS, battito, temperatura, AI dei versi, diffusore'],en:['Smart Collar S2','GPS, heart rate, temp, bark AI, diffuser'],zh:['智能项圈 S2','GPS · 心率 · 体温 · 情绪AI · 香薰']}, ms:3600},
+ {fn:()=>goTo('s-bowl'), cap:{it:['Ciotola smart B1','Acqua, cibo e pasti monitorati'],en:['Smart Bowl B1','Water, food & meals tracked'],zh:['智能碗 B1','饮水 · 进食 · 餐次']}, ms:3000},
+ {fn:()=>goTo('s-vet'), cap:{it:['Veterinario online','Ricerca, filtri e teleconsulto'],en:['Online vet','Search, filters & teleconsult'],zh:['在线问诊','搜索 · 筛选 · 视频问诊']}, ms:3200},
+ {fn:()=>{goTo('s-map');filterMap('vet');}, cap:{it:['Servizi vicini','Filtra vet, parchi, toelettatura, negozi'],en:['Nearby services','Filter vets, parks, grooming, shops'],zh:['附近服务','兽医 · 公园 · 美容 · 商店']}, ms:3400},
+ {fn:()=>{goTo('s-shop');switchShopTab('coupon');}, cap:{it:['Negozio a punti','Riscatta coupon e premi'],en:['Rewards mall','Redeem coupons & rewards'],zh:['积分商城','兑换优惠券与好礼']}, ms:3000},
+ {fn:()=>{goTo('s-shop');switchShopTab('prodotti');}, cap:{it:['Prodotti','Catalogo collare, ciotola, oli'],en:['Products','Collar, bowl & oils catalogue'],zh:['商品','项圈 · 碗 · 精油']}, ms:2800},
+ {fn:()=>openProduct('p1'), cap:{it:['Scheda prodotto','Specifiche e funzioni dettagliate'],en:['Product detail','Full specs & features'],zh:['商品详情','完整规格与功能']}, ms:3400},
+ {fn:()=>{addToCart('p1');goTo('s-cart');}, cap:{it:['Carrello','Aggiungi e procedi al checkout'],en:['Cart','Add items & check out'],zh:['购物车','加入并结算']}, ms:3000},
+ {fn:()=>{goTo('s-shop');switchShopTab('premium');}, cap:{it:['Abbonamenti','Free · Plus · Pro'],en:['Membership','Free · Plus · Pro'],zh:['会员','免费 · Plus · Pro']}, ms:2800},
+ {fn:()=>openPlan('pro'), cap:{it:['Dettaglio piano Pro','Tutte le funzioni a confronto'],en:['Pro plan detail','All features compared'],zh:['Pro 会员详情','权益对比']}, ms:3200},
+ {fn:()=>{goTo('s-social');switchSocialTab('amici');}, cap:{it:['Community','Seguiti, in voga e suggeriti'],en:['Community','Following, trending & suggested'],zh:['社区','关注 · 热门 · 推荐']}, ms:2800},
+ {fn:()=>switchSocialTab('trending'), cap:{it:['In voga','I post più popolari'],en:['Trending','The most popular posts'],zh:['热门','最受欢迎的动态']}, ms:2800},
+ {fn:()=>goTo('s-msgs'), cap:{it:['Messaggi','Chatta con altri proprietari'],en:['Messages','Chat with other owners'],zh:['消息','与其他主人聊天']}, ms:2800},
+ {fn:()=>goTo('s-profile'), cap:{it:['Profilo animale','Dispositivi e cartella clinica'],en:['Pet profile','Devices & health record'],zh:['爱宠档案','设备与健康档案']}, ms:3200},
+ {fn:()=>goTo('s-home'), cap:{it:['PetHarmony 宠程','In armonia con il tuo animale'],en:['PetHarmony 宠程','In harmony with your pet'],zh:['PetHarmony 宠程','与爱宠和谐相伴']}, ms:3600}
+];
+let tourIdx=0, tourTimer=null, tourRunning=false;
+function buildTourUI(){
+  const ph=document.querySelector('.ph');
+  if(!document.getElementById('tour-cap')){
+    const cap=document.createElement('div');cap.className='tour-cap';cap.id='tour-cap';
+    cap.innerHTML='<div class="tc-t"></div><div class="tc-s"></div>';ph.appendChild(cap);
+    const pr=document.createElement('div');pr.className='tour-prog';pr.id='tour-prog';pr.style.width='0';ph.appendChild(pr);
+    const stop=document.createElement('button');stop.className='tour-stop';stop.id='tour-stop';stop.innerHTML='<i class="ti ti-x">✕</i>';stop.onclick=stopTour;ph.appendChild(stop);
+    const btn=document.createElement('button');btn.className='demo-fab';btn.id='demo-fab';btn.innerHTML='<i class="ti ti-player-play-filled"></i><span>Demo</span>';btn.onclick=startTour;ph.appendChild(btn);
+    paintTI(ph);
+  }
+}
+function startTour(){
+  if(tourRunning)return;
+  tourRunning=true;tourIdx=0;
+  document.getElementById('demo-fab').style.display='none';
+  document.getElementById('langfab').style.display='none';
+  document.getElementById('tour-stop').classList.add('on');
+  runTourStep();
+}
+function runTourStep(){
+  if(!tourRunning)return;
+  if(tourIdx>=tourSteps.length){stopTour();return;}
+  const st=tourSteps[tourIdx];
+  try{st.fn();}catch(e){}
+  const cap=document.getElementById('tour-cap');const c=Lc(st.cap);
+  cap.querySelector('.tc-t').textContent=c[0];
+  cap.querySelector('.tc-s').textContent=c[1];
+  cap.classList.add('on');
+  const pr=document.getElementById('tour-prog');
+  pr.style.width=((tourIdx+1)/tourSteps.length*100)+'%';
+  tourIdx++;
+  tourTimer=setTimeout(()=>{cap.classList.remove('on');setTimeout(runTourStep,360);}, st.ms);
+}
+function stopTour(){
+  tourRunning=false;clearTimeout(tourTimer);
+  const cap=document.getElementById('tour-cap');if(cap)cap.classList.remove('on');
+  const pr=document.getElementById('tour-prog');if(pr)pr.style.width='0';
+  const stop=document.getElementById('tour-stop');if(stop)stop.classList.remove('on');
+  const f=document.getElementById('demo-fab');if(f)f.style.display='flex';
+  const lf=document.getElementById('langfab');if(lf)lf.style.display='flex';
+}
+
 // init
 switchTrainingTab('session');
 setLang('zh');
 syncPts();
 document.getElementById('tb-social').classList.add('badge');
 paintTI(document);
+buildTourUI();
 </script>
 </body>
 </html>
